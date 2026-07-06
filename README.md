@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/jules-readme.png" alt="Jules Awesome List" width="600">
+  <img src="assets/jules-readme.png" alt="Jules Awesome List" width="600" height="253" decoding="async" fetchpriority="high">
 </p>
 
 <div align="center">
@@ -15,6 +15,7 @@
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
+palette-readme-ux-polish-8220945013945539387
 - [Everyday Dev Tasks 🛠️](#everyday-dev-tasks)
 - [Debugging 🐞](#debugging)
 - [Documentation 📝](#documentation)
@@ -25,6 +26,19 @@
 - [Fun & Experimental ✨](#fun--experimental)
 - [Start from Scratch 🌱](#start-from-scratch)
 - [Contributing 🤝](#contributing)
+=======
+- [Everyday Dev Tasks](#everyday-dev-tasks)
+- [Debugging](#debugging)
+- [Documentation](#documentation)
+- [Testing](#testing)
+- [Security](#security)
+- [Package Management](#package-management)
+- [AI-Native Tasks](#ai-native-tasks)
+- [Context](#context)
+- [Fun \& Experimental](#fun--experimental)
+- [Start from Scratch](#start-from-scratch)
+- [Contributing](#contributing) 
+main
 
 ---
 
@@ -124,9 +138,37 @@
 
 
 
+<<<<< palette-readme-ux-polish-8220945013945539387
 [Back to top ↑](#table-of-contents)
 
 ## Package Management 📦
+=======
+
+
+## Security
+
+- `// Scan this file for hardcoded secrets or API keys...`
+  <sub>Critical for preventing accidental credential leaks.</sub>
+
+- `// Identify potential SQL injection vulnerabilities in this code...`
+  <sub>Improves database security by finding unsanitized inputs.</sub>
+
+- `// Audit this dependency list for known vulnerabilities...`
+  <sub>Useful for identifying risky third-party packages.</sub>
+
+- `// Add input validation and sanitization to this function...`
+  <sub>Prevents XSS and other injection attacks.</sub>
+
+- `// Suggest security headers for this Express app...`
+  <sub>Improves browser-side security (CSP, HSTS, etc.).</sub>
+
+- `// Implement rate limiting for this login endpoint...`
+  <sub>Protects against brute-force attacks.</sub>
+
+
+
+## Package Management
+>>>>> main
 
 - `// Upgrade my linter and autofix breaking config changes`
   <sub>JS/TS repos using ESLint or Prettier.</sub>
@@ -234,4 +276,8 @@
 Your contributions are welcome! Add new prompts, fix formatting, or suggest categories.
 
 - 📄 [Contributing Guide](contributing.md)
+    palette-readme-ux-polish-8220945013945539387
 - 🪄 Open a [Pull Request](../pulls)
+=======
+- 🪄 Open a [Pull Request](https://github.com/qapdex-maker/awesome-jules-prompts/pulls)
+    main
