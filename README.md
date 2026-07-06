@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/jules-readme.png" alt="Jules Awesome List" width="600">
+  <img src="assets/jules-readme.png" alt="Jules Awesome List" width="600" height="253" decoding="async" fetchpriority="high">
 </p>
 
 <div align="center">
