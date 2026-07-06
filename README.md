@@ -19,6 +19,7 @@
 - [Debugging](#debugging)
 - [Documentation](#documentation)
 - [Testing](#testing)
+- [Security](#security)
 - [Package Management](#package-management)
 - [AI-Native Tasks](#ai-native-tasks)
 - [Context](#context)
@@ -115,6 +116,30 @@
 
 - `// Write a Pytest fixture to mock this external API call...`
   <sub>For Python projects using Pytest and needing robust mocking for testing.</sub>
+
+
+
+
+
+## Security
+
+- `// Scan this file for hardcoded secrets or API keys...`
+  <sub>Critical for preventing accidental credential leaks.</sub>
+
+- `// Identify potential SQL injection vulnerabilities in this code...`
+  <sub>Improves database security by finding unsanitized inputs.</sub>
+
+- `// Audit this dependency list for known vulnerabilities...`
+  <sub>Useful for identifying risky third-party packages.</sub>
+
+- `// Add input validation and sanitization to this function...`
+  <sub>Prevents XSS and other injection attacks.</sub>
+
+- `// Suggest security headers for this Express app...`
+  <sub>Improves browser-side security (CSP, HSTS, etc.).</sub>
+
+- `// Implement rate limiting for this login endpoint...`
+  <sub>Protects against brute-force attacks.</sub>
 
 
 
@@ -216,4 +241,4 @@
 Your contributions are welcome! Add new prompts, fix formatting, or suggest categories.
 
 - 📄 [Contributing Guide](contributing.md)
-- 🪄 Open a [Pull Request](https://github.com/YOUR_REPO/pulls)
+- 🪄 Open a [Pull Request](https://github.com/qapdex-maker/awesome-jules-prompts/pulls)
