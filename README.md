@@ -15,20 +15,20 @@
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
-- [Everyday Dev Tasks](#everyday-dev-tasks)
-- [Debugging](#debugging)
-- [Documentation](#documentation)
-- [Testing](#testing)
-- [Package Management](#package-management)
-- [AI-Native Tasks](#ai-native-tasks)
-- [Context](#context)
-- [Fun \& Experimental](#fun--experimental)
-- [Start from Scratch](#start-from-scratch)
-- [Contributing](#contributing)
+- [Everyday Dev Tasks 🛠️](#everyday-dev-tasks)
+- [Debugging 🐞](#debugging)
+- [Documentation 📝](#documentation)
+- [Testing 🧪](#testing)
+- [Package Management 📦](#package-management)
+- [AI-Native Tasks 🤖](#ai-native-tasks)
+- [Context 🏗️](#context)
+- [Fun & Experimental ✨](#fun--experimental)
+- [Start from Scratch 🌱](#start-from-scratch)
+- [Contributing 🤝](#contributing)
 
 ---
 
-## Everyday Dev Tasks
+## Everyday Dev Tasks 🛠️
 
 - `// Refactor {a specific} file from {x} to {y}...`
   <sub>General-purpose, applies to any language or repo.</sub>
@@ -53,7 +53,9 @@
 
 
 
-## Debugging
+[Back to top ↑](#table-of-contents)
+
+## Debugging 🐞
 
 - `// Help me fix {a specific} error...`
   <sub>For any repo where you're stuck on a runtime or build error.</sub>
@@ -77,7 +79,9 @@
   <sub>For debugging complex Python scripts or understanding unexpected behavior.</sub>
 
 
-## Documentation
+[Back to top ↑](#table-of-contents)
+
+## Documentation 📝
 
 - `// Write a README for this project`
   <sub>Any repo lacking a basic project overview.</sub>
@@ -93,7 +97,9 @@
 
 
 
-## Testing
+[Back to top ↑](#table-of-contents)
+
+## Testing 🧪
 
 - `// Add integration tests for this API endpoint`
   <sub>Express, FastAPI, Django, Flask apps.</sub>
@@ -118,7 +124,9 @@
 
 
 
-## Package Management
+[Back to top ↑](#table-of-contents)
+
+## Package Management 📦
 
 - `// Upgrade my linter and autofix breaking config changes`
   <sub>JS/TS repos using ESLint or Prettier.</sub>
@@ -137,7 +145,9 @@
 
 
 
-## AI-Native Tasks
+[Back to top ↑](#table-of-contents)
+
+## AI-Native Tasks 🤖
 
 - `// Analyze this repo and generate 3 feature ideas`
   <sub>Vision-stage or greenfield products.</sub>
@@ -162,7 +172,9 @@
 
 
 
-## Context
+[Back to top ↑](#table-of-contents)
+
+## Context 🏗️
 
 - `// Write a status update based on recent commits`
   <sub>Managerial and async communication.</sub>
@@ -172,7 +184,9 @@
 
 
 
-## Fun & Experimental
+[Back to top ↑](#table-of-contents)
+
+## Fun & Experimental ✨
 
 - `// Add a confetti animation when {a specific} action succeeds`
   <sub>Frontend web apps with user delight moments.</sub>
@@ -189,7 +203,9 @@
 - `// Turn this tool into a GitHub App`
   <sub>Reusable, platform-integrated tools.</sub>
 
-## Start from Scratch
+[Back to top ↑](#table-of-contents)
+
+## Start from Scratch 🌱
 
 - `// What's going on in this repo?`
   <sub>Great for legacy repos or onboarding onto unfamiliar code.</sub>
@@ -211,9 +227,11 @@
 
 
 
-## Contributing
+[Back to top ↑](#table-of-contents)
+
+## Contributing 🤝
 
 Your contributions are welcome! Add new prompts, fix formatting, or suggest categories.
 
 - 📄 [Contributing Guide](contributing.md)
-- 🪄 Open a [Pull Request](https://github.com/YOUR_REPO/pulls)
+- 🪄 Open a [Pull Request](../pulls)
