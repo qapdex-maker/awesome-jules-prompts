@@ -16,31 +16,17 @@
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-palette-readme-ux-polish-8220945013945539387
 - [Everyday Dev Tasks 🛠️](#everyday-dev-tasks)
 - [Debugging 🐞](#debugging)
 - [Documentation 📝](#documentation)
 - [Testing 🧪](#testing)
+- [Security 🛡️](#security)
 - [Package Management 📦](#package-management)
 - [AI-Native Tasks 🤖](#ai-native-tasks)
 - [Context 🏗️](#context)
 - [Fun & Experimental ✨](#fun--experimental)
 - [Start from Scratch 🌱](#start-from-scratch)
 - [Contributing 🤝](#contributing)
-=======
-- [Everyday Dev Tasks](#everyday-dev-tasks)
-- [Debugging](#debugging)
-- [Documentation](#documentation)
-- [Testing](#testing)
-- [Security](#security)
-- [Package Management](#package-management)
-- [AI-Native Tasks](#ai-native-tasks)
-- [Context](#context)
-- [Fun \& Experimental](#fun--experimental)
-- [Start from Scratch](#start-from-scratch)
-- [Contributing](#contributing) 
-main
 
 ---
 
@@ -67,8 +53,6 @@ main
 - `// Implement a data class for this dictionary structure...`
   <sub>Useful for Python projects moving towards more structured data handling with `dataclasses` or Pydantic.</sub>
 
-
-
 [Back to top ↑](#table-of-contents)
 
 ## Debugging 🐞
@@ -94,7 +78,6 @@ main
 - `// Add print statements to trace the execution flow of this Python script...`
   <sub>For debugging complex Python scripts or understanding unexpected behavior.</sub>
 
-
 [Back to top ↑](#table-of-contents)
 
 ## Documentation 📝
@@ -110,8 +93,6 @@ main
 
 - `// Generate Sphinx-style docstrings for this Python module/class/function...`
   <sub>Ideal for Python projects using Sphinx for documentation generation.</sub>
-
-
 
 [Back to top ↑](#table-of-contents)
 
@@ -138,16 +119,9 @@ main
 - `// Write a Pytest fixture to mock this external API call...`
   <sub>For Python projects using Pytest and needing robust mocking for testing.</sub>
 
-
-
-<<<<< palette-readme-ux-polish-8220945013945539387
 [Back to top ↑](#table-of-contents)
 
-## Package Management 📦
-=======
-
-
-## Security
+## Security 🛡️
 
 - `// Scan this file for hardcoded secrets or API keys...`
   <sub>Critical for preventing accidental credential leaks.</sub>
@@ -167,10 +141,9 @@ main
 - `// Implement rate limiting for this login endpoint...`
   <sub>Protects against brute-force attacks.</sub>
 
+[Back to top ↑](#table-of-contents)
 
-
-## Package Management
->>>>> main
+## Package Management 📦
 
 - `// Upgrade my linter and autofix breaking config changes`
   <sub>JS/TS repos using ESLint or Prettier.</sub>
@@ -186,8 +159,6 @@ main
 
 - `// Set up Renovate or Dependabot for auto-updates`
   <sub>Best for active projects with CI/CD.</sub>
-
-
 
 [Back to top ↑](#table-of-contents)
 
@@ -214,8 +185,6 @@ main
 - `// Refactor this Python function to be more amenable to parallel processing (e.g., using multiprocessing or threading)...`
   <sub>For optimizing performance in computationally intensive Python applications.</sub>
 
-
-
 [Back to top ↑](#table-of-contents)
 
 ## Context 🏗️
@@ -225,8 +194,6 @@ main
 
 - `// Summarize all changes in the last 7 days`
   <sub>Catching up after time off.</sub>
-
-
 
 [Back to top ↑](#table-of-contents)
 
@@ -269,8 +236,6 @@ main
 - `// I want to build a web scraper—start me off`
   <sub>Data scraping or automation tools using Python/Node.</sub>
 
-
-
 [Back to top ↑](#table-of-contents)
 
 ## Contributing 🤝
@@ -278,8 +243,6 @@ main
 Your contributions are welcome! Add new prompts, fix formatting, or suggest categories.
 
 - 📄 [Contributing Guide](contributing.md)
-    palette-readme-ux-polish-8220945013945539387
-- 🪄 Open a [Pull Request](../pulls)
-=======
 - 🪄 Open a [Pull Request](https://github.com/qapdex-maker/awesome-jules-prompts/pulls)
-    main
+
+[Back to top ↑](#table-of-contents)
