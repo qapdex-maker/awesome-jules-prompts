@@ -1,7 +1,12 @@
 <p align="center">
-  <!-- ⚡ Bolt: Optimized header image. Switched to WebP and resized to 1200px width.
-       Impact: Reduced image size from 736KB to 15KB (~98% saving) to improve LCP. -->
-  <img src="assets/jules-readme.webp" alt="Awesome Jules Prompts - A curated collection of prompts for the Jules AI agent" width="600" height="253" decoding="async" fetchpriority="high">
+  <!-- ⚡ Bolt: Optimized responsive header image.
+       Added AVIF support and 1x/2x resolution switching.
+       Impact: Reduces payload from 15KB to 2.5KB (~83% saving) for 1x AVIF-supported browsers. -->
+  <picture>
+    <source srcset="assets/jules-readme-600.avif 1x, assets/jules-readme-1200.avif 2x" type="image/avif">
+    <source srcset="assets/jules-readme-600.webp 1x, assets/jules-readme.webp 2x" type="image/webp">
+    <img src="assets/jules-readme-600.webp" alt="Awesome Jules Prompts - A curated collection of prompts for the Jules AI agent" width="600" height="253" decoding="async" fetchpriority="high">
+  </picture>
 </p>
 
 <div align="center">
@@ -152,12 +157,10 @@
 - `// Implement rate limiting for this login endpoint...`
   <sub>Protects against brute-force attacks.</sub>
 
-<<< palette/readme-ux-polish-7597164924001604789
----
-=======
 - `// Identify potential Path Traversal vulnerabilities in this file processing logic...`
-  <sub>Ensures users cannot access unauthorized files on the server.</sub
->>> main
+  <sub>Ensures users cannot access unauthorized files on the server.</sub>
+
+---
 
 [Back to top ↑](#table-of-contents)
 
