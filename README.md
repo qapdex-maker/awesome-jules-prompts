@@ -141,6 +141,9 @@
 - `// Implement rate limiting for this login endpoint...`
   <sub>Protects against brute-force attacks.</sub>
 
+- `// Identify potential Path Traversal vulnerabilities in this file processing logic...`
+  <sub>Ensures users cannot access unauthorized files on the server.</sub>
+
 [Back to top ↑](#table-of-contents)
 
 ## Package Management 📦
