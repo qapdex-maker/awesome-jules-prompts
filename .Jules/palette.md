@@ -5,3 +5,7 @@
 ## 2025-07-07 - [Consistent Sectional Navigation]
 **Learning:** For long lists of items (like prompts), adding 'Back to top' links to *every* major section ensures users never feel 'lost' or have to scroll excessively to return to the navigation hub.
 **Action:** Implement 'Back to top' links at the end of every markdown section that contains more than 5 lines of content.
+
+## 2026-07-08 - [Prompt Placeholder Clarity & Sectional separation]
+**Learning:** Users benefit from explicit instructions on how to use placeholder syntax ({placeholder}) in prompt libraries. Additionally, adding horizontal separators before navigation links creates a clearer mental model of where one section ends and another begins.
+**Action:** Always include a 'How to Use' tip in prompt collections and use visual dividers (---) to separate content blocks from boilerplate navigation links.
