@@ -1,7 +1,7 @@
 <p align="center">
   <!-- ⚡ Bolt: Optimized header image. Switched to WebP and resized to 1200px width.
        Impact: Reduced image size from 736KB to 15KB (~98% saving) to improve LCP. -->
-  <img src="assets/jules-readme.webp" alt="Jules Awesome List" width="600" height="253" decoding="async" fetchpriority="high">
+  <img src="assets/jules-readme.webp" alt="Awesome Jules Prompts - A curated collection of prompts for the Jules AI agent" width="600" height="253" decoding="async" fetchpriority="high">
 </p>
 
 <div align="center">
@@ -11,6 +11,9 @@
   <a href="https://jules.google.com">Visit Jules</a> •
   <a href="#contributing">Contribute</a>
 </div>
+
+> [!TIP]
+> Replace placeholders in curly braces (e.g., `{a specific}`) with your actual file names, function names, or context to get the best results from Jules.
 
 ---
 
@@ -53,6 +56,8 @@
 - `// Implement a data class for this dictionary structure...`
   <sub>Useful for Python projects moving towards more structured data handling with `dataclasses` or Pydantic.</sub>
 
+---
+
 [Back to top ↑](#table-of-contents)
 
 ## Debugging 🐞
@@ -78,6 +83,8 @@
 - `// Add print statements to trace the execution flow of this Python script...`
   <sub>For debugging complex Python scripts or understanding unexpected behavior.</sub>
 
+---
+
 [Back to top ↑](#table-of-contents)
 
 ## Documentation 📝
@@ -93,6 +100,8 @@
 
 - `// Generate Sphinx-style docstrings for this Python module/class/function...`
   <sub>Ideal for Python projects using Sphinx for documentation generation.</sub>
+
+---
 
 [Back to top ↑](#table-of-contents)
 
@@ -119,6 +128,8 @@
 - `// Write a Pytest fixture to mock this external API call...`
   <sub>For Python projects using Pytest and needing robust mocking for testing.</sub>
 
+---
+
 [Back to top ↑](#table-of-contents)
 
 ## Security 🛡️
@@ -141,8 +152,12 @@
 - `// Implement rate limiting for this login endpoint...`
   <sub>Protects against brute-force attacks.</sub>
 
+<<< palette/readme-ux-polish-7597164924001604789
+---
+=======
 - `// Identify potential Path Traversal vulnerabilities in this file processing logic...`
-  <sub>Ensures users cannot access unauthorized files on the server.</sub>
+  <sub>Ensures users cannot access unauthorized files on the server.</sub
+>>> main
 
 [Back to top ↑](#table-of-contents)
 
@@ -162,6 +177,8 @@
 
 - `// Set up Renovate or Dependabot for auto-updates`
   <sub>Best for active projects with CI/CD.</sub>
+
+---
 
 [Back to top ↑](#table-of-contents)
 
@@ -188,6 +205,8 @@
 - `// Refactor this Python function to be more amenable to parallel processing (e.g., using multiprocessing or threading)...`
   <sub>For optimizing performance in computationally intensive Python applications.</sub>
 
+---
+
 [Back to top ↑](#table-of-contents)
 
 ## Context 🏗️
@@ -197,6 +216,8 @@
 
 - `// Summarize all changes in the last 7 days`
   <sub>Catching up after time off.</sub>
+
+---
 
 [Back to top ↑](#table-of-contents)
 
@@ -216,6 +237,8 @@
 
 - `// Turn this tool into a GitHub App`
   <sub>Reusable, platform-integrated tools.</sub>
+
+---
 
 [Back to top ↑](#table-of-contents)
 
@@ -239,6 +262,8 @@
 - `// I want to build a web scraper—start me off`
   <sub>Data scraping or automation tools using Python/Node.</sub>
 
+---
+
 [Back to top ↑](#table-of-contents)
 
 ## Contributing 🤝
@@ -247,5 +272,7 @@ Your contributions are welcome! Add new prompts, fix formatting, or suggest cate
 
 - 📄 [Contributing Guide](contributing.md)
 - 🪄 Open a [Pull Request](https://github.com/qapdex-maker/awesome-jules-prompts/pulls)
+
+---
 
 [Back to top ↑](#table-of-contents)
