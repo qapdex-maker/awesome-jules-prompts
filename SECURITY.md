@@ -1,3 +1,7 @@
+[← Back to Main README](README.md)
+
+---
+
 # Security Policy
 
 ## Reporting a Vulnerability

@@ -1,8 +1,13 @@
+[← Back to Main README](README.md)
+
+---
+
 # Contributing
 
 Thank you for considering contributing to **Awesome Jules Prompts**!
 
 ## How to Contribute
+
 - We have a [Pull Request Template](pull_request_template.md) to help you get started.
 
 - Add a new prompt to the appropriate section in `README.md`.

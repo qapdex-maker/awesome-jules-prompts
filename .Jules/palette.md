@@ -9,3 +9,7 @@
 ## 2026-07-08 - [Prompt Placeholder Clarity & Sectional separation]
 **Learning:** Users benefit from explicit instructions on how to use placeholder syntax ({placeholder}) in prompt libraries. Additionally, adding horizontal separators before navigation links creates a clearer mental model of where one section ends and another begins.
 **Action:** Always include a 'How to Use' tip in prompt collections and use visual dividers (---) to separate content blocks from boilerplate navigation links.
+
+## 2026-07-08 - [Unified Documentation Navigation & Disambiguation]
+**Learning:** Providing clear navigation paths between disparate documentation files (e.g., Back to README links) reduces user friction. Additionally, explicitly linking to specific policies from similar-sounding content sections (like linking the Security Policy from a list of Security prompts) helps users find the right information quickly.
+**Action:** Implement bidirectional navigation between sub-docs and the main README, and add disambiguation links in sections that might be confused with official repository policies.

@@ -14,7 +14,8 @@
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
   <a href="https://jules.google.com">Visit Jules</a> •
-  <a href="#contributing">Contribute</a>
+  <a href="#contributing">Contribute</a> •
+  <a href="SECURITY.md">Security Policy</a>
 </div>
 
 > [!TIP]
@@ -138,6 +139,9 @@
 [Back to top ↑](#table-of-contents)
 
 ## Security 🛡️
+
+> [!IMPORTANT]
+> To report a vulnerability in this repository, please refer to our [Security Policy](SECURITY.md).
 
 - `// Scan this file for hardcoded secrets or API keys...`
   <sub>Critical for preventing accidental credential leaks.</sub>
