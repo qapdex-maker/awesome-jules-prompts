@@ -12,3 +12,11 @@
 
 **Learning:** Even a 1px discrepancy in image height attributes (e.g., 253 vs 252) can trigger sub-pixel layout shifts and inefficient browser painting, especially on high-DPI displays where these values are scaled.
 **Action:** Always verify actual asset dimensions (using `file` or `identify`) before setting `width` and `height` in Markdown/HTML to ensure zero CLS.
+
+## 2026-07-11 - Proportional precision in responsive assets
+
+**Learning:** When using `srcset` for high-DPI displays (2x, 3x), non-proportional dimensions (e.g., 600x252 vs 1200x505) can cause sub-pixel rendering artifacts and inefficient browser painting during scaling.
+
+**Action:** Ensure high-resolution assets are exact multiples of the base 1x dimensions (e.g., exactly 2:1 ratio) to guarantee pixel-perfect scaling and zero layout shift across all resolutions.
+
+---
