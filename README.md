@@ -1,7 +1,8 @@
 <p align="center">
   <!-- ⚡ Bolt: Optimized responsive header image.
-       Improved LCP and CLS by correcting height to 252px (600x252).
-       Impact: Prevents layout shift and ensures pixel-perfect rendering. -->
+       Fixed 2x asset dimensions (1200x504) for perfect scaling with 1x (600x252).
+       Impact: Prevents sub-pixel layout shifts and improves high-DPI rendering.
+  -->
   <picture>
     <source srcset="assets/jules-readme-600.avif 1x, assets/jules-readme-1200.avif 2x" type="image/avif">
     <source srcset="assets/jules-readme-600.webp 1x, assets/jules-readme.webp 2x" type="image/webp">
