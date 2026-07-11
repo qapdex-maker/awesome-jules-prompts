@@ -2,7 +2,7 @@
 
 ---
 
-# Contributing
+# Contributing 🤝
 
 Thank you for considering contributing to **Awesome Jules Prompts**!
 
