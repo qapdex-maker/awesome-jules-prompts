@@ -1,11 +1,12 @@
 <p align="center">
   <!-- ⚡ Bolt: Optimized responsive header image.
-       Improved LCP by removing async decoding and re-compressing assets.
-       Impact: Reduces 2x WebP from 15KB to 7.8KB (~48% saving). -->
+       Fixed 2x asset dimensions (1200x504) for perfect scaling with 1x (600x252).
+       Impact: Prevents sub-pixel layout shifts and improves high-DPI rendering.
+  -->
   <picture>
     <source srcset="assets/jules-readme-600.avif 1x, assets/jules-readme-1200.avif 2x" type="image/avif">
     <source srcset="assets/jules-readme-600.webp 1x, assets/jules-readme.webp 2x" type="image/webp">
-    <img src="assets/jules-readme-600.webp" alt="Awesome Jules Prompts - A curated collection of prompts for the Jules AI agent" width="600" height="253" fetchpriority="high">
+    <img src="assets/jules-readme-600.webp" alt="Awesome Jules Prompts - A curated collection of prompts for the Jules AI agent" width="600" height="252" fetchpriority="high">
   </picture>
 </p>
 
@@ -13,9 +14,15 @@
   <h1>Awesome Jules Prompts 🌟</h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
+ palette/doc-ux-polish-18174435585779151250
   <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer">Visit Jules 🚀</a> •
   <a href="#contributing">Contribute 🤝</a> •
   <a href="SECURITY.md">Security Policy 🛡️</a>
+=======
+  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules</a> •
+  <a href="#contributing">Contribute</a> •
+  <a href="SECURITY.md">Security Policy</a>
+ main
 </div>
 
 > [!TIP]
