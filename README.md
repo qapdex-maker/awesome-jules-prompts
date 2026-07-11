@@ -14,9 +14,15 @@
   <h1>Awesome Jules Prompts 🌟</h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
+ palette/doc-ux-polish-18174435585779151250
+  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer">Visit Jules 🚀</a> •
+  <a href="#contributing">Contribute 🤝</a> •
+  <a href="SECURITY.md">Security Policy 🛡️</a>
+=======
   <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules</a> •
   <a href="#contributing">Contribute</a> •
   <a href="SECURITY.md">Security Policy</a>
+ main
 </div>
 
 > [!TIP]
