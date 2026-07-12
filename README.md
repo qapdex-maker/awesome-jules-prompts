@@ -1,7 +1,8 @@
 <p align="center">
   <!-- ⚡ Bolt: Optimized responsive header image.
        Fixed 2x asset dimensions (1200x504) for perfect scaling with 1x (600x252).
-       Impact: Prevents sub-pixel layout shifts and improves high-DPI rendering.
+       Impact: Prevents sub-pixel layout shifts. Improved LCP by re-compressing
+               AVIF assets (1200px: 3.8K -> 2.4K, 600px: 2.2K -> 1.6K).
   -->
   <picture>
     <source srcset="assets/jules-readme-600.avif 1x, assets/jules-readme-1200.avif 2x" type="image/avif">
@@ -14,21 +15,17 @@
   <h1>Awesome Jules Prompts 🌟</h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
- palette/doc-ux-polish-18174435585779151250
-  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer">Visit Jules 🚀</a> •
+  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a> •
   <a href="#contributing">Contribute 🤝</a> •
   <a href="SECURITY.md">Security Policy 🛡️</a>
-=======
-  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules</a> •
-  <a href="#contributing">Contribute</a> •
-  <a href="SECURITY.md">Security Policy</a>
- main
 </div>
 
 > [!TIP]
 > Replace placeholders in curly braces (e.g., `{a specific}`) with your actual file names, function names, or context to get the best results from Jules.
 
 ---
+
+<a id="table-of-contents"></a>
 
 ## Table of Contents
 
@@ -45,6 +42,8 @@
 - [Contributing 🤝](#contributing)
 
 ---
+
+<a id="everyday-dev-tasks"></a>
 
 ## Everyday Dev Tasks 🛠️
 
@@ -73,6 +72,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="debugging"></a>
+
 ## Debugging 🐞
 
 - `// Help me fix {a specific} error...`
@@ -100,6 +101,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="documentation"></a>
+
 ## Documentation 📝
 
 - `// Write a README for this project`
@@ -117,6 +120,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="testing"></a>
 
 ## Testing 🧪
 
@@ -144,6 +149,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="security"></a>
 
 ## Security 🛡️
 
@@ -175,6 +182,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="package-management"></a>
+
 ## Package Management 📦
 
 - `// Upgrade my linter and autofix breaking config changes`
@@ -195,6 +204,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="ai-native-tasks"></a>
 
 ## AI-Native Tasks 🤖
 
@@ -223,6 +234,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="context"></a>
+
 ## Context 🏗️
 
 - `// Write a status update based on recent commits`
@@ -234,6 +247,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="fun--experimental"></a>
 
 ## Fun & Experimental ✨
 
@@ -255,6 +270,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="start-from-scratch"></a>
 
 ## Start from Scratch 🌱
 
@@ -279,6 +296,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="contributing"></a>
 
 ## Contributing 🤝
 
