@@ -14,15 +14,9 @@
   <h1>Awesome Jules Prompts 🌟</h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
- palette/doc-ux-polish-18174435585779151250
-  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer">Visit Jules 🚀</a> •
+  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a> •
   <a href="#contributing">Contribute 🤝</a> •
   <a href="SECURITY.md">Security Policy 🛡️</a>
-=======
-  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules</a> •
-  <a href="#contributing">Contribute</a> •
-  <a href="SECURITY.md">Security Policy</a>
- main
 </div>
 
 > [!TIP]
@@ -45,6 +39,8 @@
 - [Contributing 🤝](#contributing)
 
 ---
+
+<a id="everyday-dev-tasks"></a>
 
 ## Everyday Dev Tasks 🛠️
 
@@ -73,6 +69,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="debugging"></a>
+
 ## Debugging 🐞
 
 - `// Help me fix {a specific} error...`
@@ -100,6 +98,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="documentation"></a>
+
 ## Documentation 📝
 
 - `// Write a README for this project`
@@ -117,6 +117,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="testing"></a>
 
 ## Testing 🧪
 
@@ -144,6 +146,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="security"></a>
 
 ## Security 🛡️
 
@@ -175,6 +179,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="package-management"></a>
+
 ## Package Management 📦
 
 - `// Upgrade my linter and autofix breaking config changes`
@@ -195,6 +201,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="ai-native-tasks"></a>
 
 ## AI-Native Tasks 🤖
 
@@ -223,6 +231,8 @@
 
 [Back to top ↑](#table-of-contents)
 
+<a id="context"></a>
+
 ## Context 🏗️
 
 - `// Write a status update based on recent commits`
@@ -234,6 +244,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="fun--experimental"></a>
 
 ## Fun & Experimental ✨
 
@@ -255,6 +267,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="start-from-scratch"></a>
 
 ## Start from Scratch 🌱
 
@@ -279,6 +293,8 @@
 ---
 
 [Back to top ↑](#table-of-contents)
+
+<a id="contributing"></a>
 
 ## Contributing 🤝
 
