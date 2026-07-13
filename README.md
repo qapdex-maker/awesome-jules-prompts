@@ -1,7 +1,8 @@
 <p align="center">
   <!-- ⚡ Bolt: Optimized responsive header image.
        Fixed 2x asset dimensions (1200x504) for perfect scaling with 1x (600x252).
-       Impact: Prevents sub-pixel layout shifts and improves high-DPI rendering.
+       Impact: Prevents sub-pixel layout shifts. Improved LCP by re-compressing
+               AVIF assets (1200px: 3.8K -> 2.4K, 600px: 2.2K -> 1.6K).
   -->
   <picture>
     <source srcset="assets/jules-readme-600.avif 1x, assets/jules-readme-1200.avif 2x" type="image/avif">
@@ -23,6 +24,8 @@
 > Replace placeholders in curly braces (e.g., `{a specific}`) with your actual file names, function names, or context to get the best results from Jules.
 
 ---
+
+<a id="table-of-contents"></a>
 
 ## Table of Contents
 

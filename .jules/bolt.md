@@ -19,4 +19,10 @@
 
 **Action:** Ensure high-resolution assets are exact multiples of the base 1x dimensions (e.g., exactly 2:1 ratio) to guarantee pixel-perfect scaling and zero layout shift across all resolutions.
 
+## 2025-07-13 - AVIF re-compression for documentation assets
+
+**Learning:** Re-compressing existing AVIF assets using `sharp-cli` with optimized settings (`-q 30 --effort 6`) can yield significant payload reductions (~27-37%) without visible quality loss, further improving LCP for modern browsers.
+
+**Action:** Periodically audit and re-compress documentation image assets to ensure minimal delivery weight.
+
 ---
