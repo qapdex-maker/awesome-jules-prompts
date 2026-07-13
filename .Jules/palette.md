@@ -87,4 +87,13 @@ reliable target for Table of Contents links.
 **Action:** For all major documentation sections that use emojis in headings,
 provide an explicit HTML anchor above the heading to ensure navigation remains
 functional and robust.
+
+## 2026-07-13 - [Unified Navigation & Screen Reader Polish]
+
+**Learning:** Supplemental documentation (e.g., SECURITY.md) often feels like a
+"dead end" if it lacks a return path to the main navigation hub. Furthermore,
+visual separators like " • " can create auditory noise for screen readers.
+**Action:** Provide "Back to Table of Contents" links at the end of sub-docs
+and wrap visual-only separators in `<span aria-hidden="true">` to ensure a
+cleaner experience for all users.
  main
