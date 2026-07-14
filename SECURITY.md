@@ -13,3 +13,7 @@ We take the security of this project seriously. If you believe you have found a 
 3. Provide a detailed description of the vulnerability and steps to reproduce it.
 
 We will acknowledge your report and work to address the issue as quickly as possible. Thank you for helping keep this project secure!
+
+---
+
+[← Back to Table of Contents](README.md#table-of-contents)

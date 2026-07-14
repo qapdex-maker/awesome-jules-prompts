@@ -15,9 +15,9 @@
   <h1>Awesome Jules Prompts 🌟</h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
-  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a> •
-  <a href="#contributing">Contribute 🤝</a> •
-  <a href="SECURITY.md">Security Policy 🛡️</a>
+  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a><span aria-hidden="true"> • </span>
+  <a href="#contributing" aria-label="Contribute to this project 🤝">Contribute 🤝</a><span aria-hidden="true"> • </span>
+  <a href="SECURITY.md" aria-label="Read our Security Policy 🛡️">Security Policy 🛡️</a>
 </div>
 
 > [!TIP]
@@ -301,10 +301,14 @@
 
 ## Contributing 🤝
 
+> [!TIP]
+> New here? Check out our [Contributing Guide](contributing.md) to learn how to
+> add your own prompts.
+
 Your contributions are welcome! Add new prompts, fix formatting, or suggest categories.
 
 - 📄 [Contributing Guide](contributing.md)
-- 🪄 Open a [Pull Request](https://github.com/qapdex-maker/awesome-jules-prompts/pulls)
+- 🪄 Open a <a href="https://github.com/qapdex-maker/awesome-jules-prompts/pulls" target="_blank" rel="noopener noreferrer" aria-label="Open a Pull Request (opens in a new tab)">Pull Request</a>
 
 ---
 
