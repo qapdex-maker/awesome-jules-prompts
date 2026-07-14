@@ -178,6 +178,9 @@
 - `// Identify potential Path Traversal vulnerabilities in this file processing logic...`
   <sub>Ensures users cannot access unauthorized files on the server.</sub>
 
+- `// Identify potential Command Injection vulnerabilities in this code...`
+  <sub>Detects unsanitized inputs passed to system shell commands to prevent unauthorized command execution.</sub>
+
 ---
 
 [Back to top ↑](#table-of-contents)
