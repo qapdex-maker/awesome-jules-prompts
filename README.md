@@ -16,8 +16,8 @@
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
   <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a><span aria-hidden="true"> • </span>
-  <a href="#contributing" aria-label="Contribute to this project 🤝">Contribute 🤝</a><span aria-hidden="true"> • </span>
-  <a href="SECURITY.md" aria-label="Read our Security Policy 🛡️">Security Policy 🛡️</a>
+  <a href="#contributing" aria-label="Contribute to this project">Contribute 🤝</a><span aria-hidden="true"> • </span>
+  <a href="SECURITY.md" aria-label="Read our Security Policy">Security Policy 🛡️</a>
 </div>
 
 > [!TIP]
@@ -70,7 +70,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="debugging"></a>
 
@@ -99,7 +99,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="documentation"></a>
 
@@ -119,7 +119,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="testing"></a>
 
@@ -148,7 +148,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="security"></a>
 
@@ -183,7 +183,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="package-management"></a>
 
@@ -206,7 +206,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="ai-native-tasks"></a>
 
@@ -235,7 +235,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="context"></a>
 
@@ -249,7 +249,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="fun--experimental"></a>
 
@@ -272,7 +272,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="start-from-scratch"></a>
 
@@ -298,7 +298,7 @@
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>
 
 <a id="contributing"></a>
 
@@ -315,4 +315,4 @@ Your contributions are welcome! Add new prompts, fix formatting, or suggest cate
 
 ---
 
-[Back to top ↑](#table-of-contents)
+<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>

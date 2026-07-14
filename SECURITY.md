@@ -1,4 +1,4 @@
-[← Back to Main README](README.md)
+<a href="README.md" aria-label="Back to Main README">← Back to Main README</a>
 
 ---
 
@@ -16,4 +16,4 @@ We will acknowledge your report and work to address the issue as quickly as poss
 
 ---
 
-[← Back to Table of Contents](README.md#table-of-contents)
+<a href="README.md#table-of-contents" aria-label="Back to Table of Contents in Main README">← Back to Table of Contents</a>

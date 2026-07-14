@@ -6,6 +6,6 @@ Please provide a brief description of your addition or change.
 
 - [ ] I've added the prompt in the correct section.
 - [ ] The prompt is helpful, concise, and clear.
-- [ ] I've included a `[Back to top ↑](#table-of-contents)` link at the end of the section.
+- [ ] I've included an accessible `Back to top` link at the end of the section (e.g., `<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>`).
 - [ ] I've verified accessibility (e.g., ARIA labels for new external links).
 - [ ] I've double-checked the markdown formatting.

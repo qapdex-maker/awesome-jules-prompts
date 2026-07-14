@@ -1,4 +1,4 @@
-[← Back to Main README](README.md)
+<a href="README.md" aria-label="Back to Main README">← Back to Main README</a>
 
 ---
 
@@ -18,12 +18,13 @@ Thank you for considering contributing to **Awesome Jules Prompts**!
 
 - Use inline code formatting for prompt examples (`// like this`).
 - Group related prompts under the right heading.
-- Include a `[Back to top ↑](#table-of-contents)` link at the end of any new or
-  significantly expanded sections in `README.md` to maintain easy navigation.
+- Include an accessible `Back to top` link at the end of any new or
+  significantly expanded sections in `README.md` to maintain easy navigation
+  (e.g., `<a href="#table-of-contents" aria-label="Back to Table of Contents">Back to top ↑</a>`).
 - Feel free to suggest new categories if needed.
 
 Let’s build this together!
 
 ---
 
-[← Back to Table of Contents](README.md#table-of-contents)
+<a href="README.md#table-of-contents" aria-label="Back to Table of Contents in Main README">← Back to Table of Contents</a>
