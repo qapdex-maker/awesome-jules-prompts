@@ -2,12 +2,22 @@
 node_modules/
 jspm_packages/
 
-# Environment variables
+# Environment variables and local settings
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Keys, certificates, and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+client_secret*.json
+.npmrc
+.pnpmrc
 
 # Logs
 *.log
