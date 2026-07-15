@@ -25,10 +25,18 @@
 
 **Action:** Periodically audit and re-compress documentation image assets to ensure minimal delivery weight.
 
+ bolt-optimize-images-17892934953095244607
+## 2025-07-15 - Re-compressing already optimized assets
+
+**Learning:** Re-compressing 1x and 2x WebP assets using `npx sharp-cli -i <input> -o <output> -f webp -q 50 --effort 6` can yield additional ~15% payload reductions even on previously optimized documentation assets.
+
+**Action:** Don't assume previously optimized assets are at their limit; test aggressive compression settings periodically.
+=======
 ## 2025-07-14 - WebP and aggressive AVIF re-compression
 
 **Learning:** Documentation assets can often tolerate more aggressive compression than standard web assets. Re-compressing already-optimized AVIF assets at `-q 20` and WebP assets at `-q 50` with `--effort 6` achieved an additional ~15-20% payload reduction without visible degradation in the context of documentation headers.
 
 **Action:** Use aggressive quality settings (`-q 20` for AVIF, `-q 50` for WebP) with maximum effort for static documentation assets to minimize LCP.
+ main
 
 ---

@@ -2,8 +2,12 @@
   <!-- ⚡ Bolt: Optimized responsive header image.
        Fixed 2x asset dimensions (1200x504) for perfect scaling with 1x (600x252).
        Impact: Prevents sub-pixel layout shifts. Improved LCP by re-compressing
+ bolt-optimize-images-17892934953095244607
+               assets (AVIF: 2.4K->2.0K/1.6K->1.3K, WebP: 7.8K->6.7K/3.7K->3.1K).
+=======
                AVIF assets (1200px: 2.4K -> 2.0K, 600px: 1.6K -> 1.3K) and
                WebP assets (1200px: 7.8K -> 6.7K, 600px: 3.7K -> 3.1K).
+ main
   -->
   <picture>
     <source srcset="assets/jules-readme-600.avif 1x, assets/jules-readme-1200.avif 2x" type="image/avif">
