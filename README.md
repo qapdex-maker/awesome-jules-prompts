@@ -181,6 +181,9 @@
 - `// Identify potential Command Injection vulnerabilities in this code...`
   <sub>Detects unsanitized inputs passed to system shell commands to prevent unauthorized command execution.</sub>
 
+- `// Review this LLM integration for Prompt Injection and Insecure Output Handling...`
+  <sub>Secures AI-native applications by preventing malicious system-prompt overrides and unescaped LLM output execution.</sub>
+
 ---
 
 [Back to top ↑](#table-of-contents)
