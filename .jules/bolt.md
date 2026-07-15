@@ -25,4 +25,10 @@
 
 **Action:** Periodically audit and re-compress documentation image assets to ensure minimal delivery weight.
 
+## 2025-07-15 - Re-compressing already optimized assets
+
+**Learning:** Re-compressing 1x and 2x WebP assets using `npx sharp-cli -i <input> -o <output> -f webp -q 50 --effort 6` can yield additional ~15% payload reductions even on previously optimized documentation assets.
+
+**Action:** Don't assume previously optimized assets are at their limit; test aggressive compression settings periodically.
+
 ---
