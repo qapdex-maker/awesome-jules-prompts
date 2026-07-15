@@ -25,4 +25,10 @@
 
 **Action:** Periodically audit and re-compress documentation image assets to ensure minimal delivery weight.
 
+## 2025-07-14 - WebP and aggressive AVIF re-compression
+
+**Learning:** Documentation assets can often tolerate more aggressive compression than standard web assets. Re-compressing already-optimized AVIF assets at `-q 20` and WebP assets at `-q 50` with `--effort 6` achieved an additional ~15-20% payload reduction without visible degradation in the context of documentation headers.
+
+**Action:** Use aggressive quality settings (`-q 20` for AVIF, `-q 50` for WebP) with maximum effort for static documentation assets to minimize LCP.
+
 ---
