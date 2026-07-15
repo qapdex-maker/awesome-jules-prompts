@@ -96,4 +96,9 @@ visual separators like " • " can create auditory noise for screen readers.
 **Action:** Provide "Back to Table of Contents" links at the end of sub-docs
 and wrap visual-only separators in `<span aria-hidden="true">` to ensure a
 cleaner experience for all users.
+
+## 2026-07-14 - [Accessible Navigation & Screen Reader Polish]
+
+**Learning:** Emojis and symbolic arrows in navigation links (like ↑ or ←) provide great visual cues but can be noisy or ambiguous for screen readers. Using descriptive `aria-label`s on accessible HTML anchors allows us to keep the visual charm while providing a clear, concise experience for all users.
+**Action:** Use HTML anchors with descriptive `aria-label`s for all navigation links containing emojis or special characters (e.g., `<a href="..." aria-label="Back to Table of Contents">Back to top ↑</a>`).
  main
