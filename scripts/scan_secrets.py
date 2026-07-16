@@ -4,10 +4,10 @@ import re
 import sys
 
 PATTERNS = {
-    "Generic Token": r"(?i)(api_key|secret|token|passwd|private_key)\s*[:=]\s*['\"][a-zA-Z0-9_\-]{16,}['\"]",
-    "OpenAI API Key": r"sk-[a-zA-Z0-9]{32,}",
-    "AWS Access Key": r"AKIA[0-9A-Z]{16}",
-    "Google API Key": r"AIzaSy[A-Za-z0-9_-]{33}",
+    "Generic Token": r"(?i)(api_key|secret|token|passwd|private_key)\s*[:=]\s*['\"](?:\{[a-zA-Z0-9_\-]+\}|[a-zA-Z0-9_\-]{16,})['\"]",
+    "OpenAI API Key": r"sk-(?:[a-zA-Z0-9]{32,}|\{[a-zA-Z0-9_\-]+\})",
+    "AWS Access Key": r"AKIA(?:[0-9A-Z]{16}|\{[a-zA-Z0-9_\-]+\})",
+    "Google API Key": r"AIzaSy(?:[A-Za-z0-9_-]{33}|\{[a-zA-Z0-9_\-]+\})",
 }
 
 def scan_file(filepath):
@@ -16,8 +16,10 @@ def scan_file(filepath):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for line_no, line in enumerate(f, 1):
                 for label, pattern in PATTERNS.items():
-                    if re.search(pattern, line):
-                        if "{" in line and "}" in line:
+                    match = re.search(pattern, line)
+                    if match:
+                        matched_str = match.group(0)
+                        if "{" in matched_str and "}" in matched_str:
                             continue
                         found_issues.append((line_no, label, line.strip()))
     except Exception as e:

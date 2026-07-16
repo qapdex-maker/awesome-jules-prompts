@@ -16,3 +16,11 @@ lightweight and localized script is needed to prevent credential leakage.
 (`scripts/scan_secrets.py`) utilizing regex patterns to validate file contents
 before changes are committed, raising failures on potential high-entropy
 credentials.
+
+## 2026-07-16 - [Secret Scan Bypass via Template Comments]
+
+**Vulnerability:** A naive line-level check for curly braces (`"{" in line and "}" in line`) in `scan_secrets.py` allowed real secrets to bypass scanning completely if a prompt placeholder or curly brace comment existed anywhere on the same line.
+
+**Learning:** Line-level heuristic bypasses can easily create security gaps when multiple patterns coexist (e.g., a real API key and an unrelated placeholder/comment on the same line). Filtering must be precisely targeted at the matched secret string rather than broad line-level heuristics.
+
+**Prevention:** Refine secret scanning regex patterns to explicitly match both normal secrets and placeholder formats, then check if curly braces are present within the matched substring (`match.group(0)`) rather than the entire line before skipping.
