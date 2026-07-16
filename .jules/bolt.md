@@ -33,4 +33,9 @@
 **Learning:** Re-compressing 1x and 2x WebP assets using `npx sharp-cli -i <input> -o <output> -f webp -q 50 --effort 6` can yield additional ~15% payload reductions even on previously optimized documentation assets.
 **Action:** Don't assume previously optimized assets are at their limit; test aggressive compression settings periodically.
 
+## 2025-07-16 - Efficient directory traversal in Python
+
+**Learning:** In Python scripts using `os.walk`, pruning the `dirs` list in-place (e.g., `dirs[:] = [d for d in dirs if d not in ignored_dirs]`) is significantly more efficient than checking the root path inside the loop. This prevents the crawler from visiting ignored directory branches entirely, rather than just skipping their files.
+**Action:** Always use in-place `dirs` pruning with `os.walk` when ignoring large directories like `.git` or `node_modules`.
+
 ---

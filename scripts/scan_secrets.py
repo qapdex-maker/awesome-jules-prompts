@@ -3,11 +3,12 @@ import os
 import re
 import sys
 
+# ⚡ Bolt: Pre-compile regex patterns for better performance
 PATTERNS = {
-    "Generic Token": r"(?i)(api_key|secret|token|passwd|private_key)\s*[:=]\s*['\"](?:\{[a-zA-Z0-9_\-]+\}|[a-zA-Z0-9_\-]{16,})['\"]",
-    "OpenAI API Key": r"sk-(?:[a-zA-Z0-9]{32,}|\{[a-zA-Z0-9_\-]+\})",
-    "AWS Access Key": r"AKIA(?:[0-9A-Z]{16}|\{[a-zA-Z0-9_\-]+\})",
-    "Google API Key": r"AIzaSy(?:[A-Za-z0-9_-]{33}|\{[a-zA-Z0-9_\-]+\})",
+    "Generic Token": re.compile(r"(?i)(api_key|secret|token|passwd|private_key)\s*[:=]\s*['\"](?:\{[a-zA-Z0-9_\-]+\}|[a-zA-Z0-9_\-]{16,})['\"]"),
+    "OpenAI API Key": re.compile(r"sk-(?:[a-zA-Z0-9]{32,}|\{[a-zA-Z0-9_\-]+\})"),
+    "AWS Access Key": re.compile(r"AKIA(?:[0-9A-Z]{16}|\{[a-zA-Z0-9_\-]+\})"),
+    "Google API Key": re.compile(r"AIzaSy(?:[A-Za-z0-9_-]{33}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 def scan_file(filepath):
@@ -15,8 +16,8 @@ def scan_file(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for line_no, line in enumerate(f, 1):
-                for label, pattern in PATTERNS.items():
-                    match = re.search(pattern, line)
+                for label, cp in PATTERNS.items():
+                    match = cp.search(line)
                     if match:
                         matched_str = match.group(0)
                         if "{" in matched_str and "}" in matched_str:
@@ -28,9 +29,10 @@ def scan_file(filepath):
 
 def main():
     failed = False
-    for root, _, files in os.walk('.'):
-        if any(ignored in root for ignored in ['.git', 'node_modules', 'assets']):
-            continue
+    # ⚡ Bolt: Use directory pruning to skip ignored folders efficiently
+    ignored_dirs = {'.git', 'node_modules', 'assets'}
+    for root, dirs, files in os.walk('.'):
+        dirs[:] = [d for d in dirs if d not in ignored_dirs]
         for file in files:
             filepath = os.path.join(root, file)
             issues = scan_file(filepath)
