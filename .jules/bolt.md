@@ -16,27 +16,21 @@
 ## 2026-07-11 - Proportional precision in responsive assets
 
 **Learning:** When using `srcset` for high-DPI displays (2x, 3x), non-proportional dimensions (e.g., 600x252 vs 1200x505) can cause sub-pixel rendering artifacts and inefficient browser painting during scaling.
-
 **Action:** Ensure high-resolution assets are exact multiples of the base 1x dimensions (e.g., exactly 2:1 ratio) to guarantee pixel-perfect scaling and zero layout shift across all resolutions.
 
 ## 2025-07-13 - AVIF re-compression for documentation assets
 
 **Learning:** Re-compressing existing AVIF assets using `sharp-cli` with optimized settings (`-q 30 --effort 6`) can yield significant payload reductions (~27-37%) without visible quality loss, further improving LCP for modern browsers.
-
 **Action:** Periodically audit and re-compress documentation image assets to ensure minimal delivery weight.
 
- bolt-optimize-images-17892934953095244607
-## 2025-07-15 - Re-compressing already optimized assets
-
-**Learning:** Re-compressing 1x and 2x WebP assets using `npx sharp-cli -i <input> -o <output> -f webp -q 50 --effort 6` can yield additional ~15% payload reductions even on previously optimized documentation assets.
-
-**Action:** Don't assume previously optimized assets are at their limit; test aggressive compression settings periodically.
-=======
 ## 2025-07-14 - WebP and aggressive AVIF re-compression
 
 **Learning:** Documentation assets can often tolerate more aggressive compression than standard web assets. Re-compressing already-optimized AVIF assets at `-q 20` and WebP assets at `-q 50` with `--effort 6` achieved an additional ~15-20% payload reduction without visible degradation in the context of documentation headers.
-
 **Action:** Use aggressive quality settings (`-q 20` for AVIF, `-q 50` for WebP) with maximum effort for static documentation assets to minimize LCP.
- main
+
+## 2025-07-15 - Re-compressing already optimized assets
+
+**Learning:** Re-compressing 1x and 2x WebP assets using `npx sharp-cli -i <input> -o <output> -f webp -q 50 --effort 6` can yield additional ~15% payload reductions even on previously optimized documentation assets.
+**Action:** Don't assume previously optimized assets are at their limit; test aggressive compression settings periodically.
 
 ---
