@@ -1,4 +1,7 @@
 <!-- markdownlint-disable MD041 -->
+[← Back to Main README](../README.md)
+
+---
 
 ## 2026-07-14 - [Automated Pre-Commit Secret Scanning]
 

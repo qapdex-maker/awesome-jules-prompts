@@ -1,3 +1,8 @@
+<!-- markdownlint-disable MD041 -->
+[← Back to Main README](../README.md)
+
+---
+
 ## 2023-07-06 - Image optimization in documentation-only repos
 
 **Learning:** In repositories that are primarily documentation (like awesome lists), performance optimizations are centered around asset delivery (images) and Web Vitals (LCP, CLS).
@@ -37,5 +42,12 @@
 
 **Learning:** In Python scripts using `os.walk`, pruning the `dirs` list in-place (e.g., `dirs[:] = [d for d in dirs if d not in ignored_dirs]`) is significantly more efficient than checking the root path inside the loop. This prevents the crawler from visiting ignored directory branches entirely, rather than just skipping their files.
 **Action:** Always use in-place `dirs` pruning with `os.walk` when ignoring large directories like `.git` or `node_modules`.
+
+---
+
+## 2025-07-17 - Correct-by-construction whole-file pre-filtering
+
+**Learning:** Attempting to optimize regex execution by using fast prefix substring checks on individual lines can introduce security regressions (false negatives) if not all possible matching variations (e.g., camelCase, snake_case, standard PEM structures) are accounted for. Instead, running a fast `cp.search(content)` on the whole file content serves as a robust pre-filter. If it returns False, we can skip the file entirely with 100% safety and correctness.
+**Action:** Use whole-file regex pre-filtering (`search()`) before doing line-by-line (`finditer()`) scanning in security or scanning scripts to gain performance without sacrificing safety.
 
 ---
