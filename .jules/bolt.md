@@ -1,3 +1,8 @@
+<!-- markdownlint-disable MD041 -->
+[← Back to Main README](../README.md)
+
+---
+
 ## 2023-07-06 - Image optimization in documentation-only repos
 
 **Learning:** In repositories that are primarily documentation (like awesome lists), performance optimizations are centered around asset delivery (images) and Web Vitals (LCP, CLS).

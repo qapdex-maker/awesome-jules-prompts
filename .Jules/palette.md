@@ -41,3 +41,8 @@
 
 **Learning:** Emojis and symbolic arrows in navigation links (like ↑ or ←) provide great visual cues but can be noisy or ambiguous for screen readers. Using descriptive `aria-label`s on accessible HTML anchors allows us to keep the visual charm while providing a clear, concise experience for all users.
 **Action:** Use HTML anchors with descriptive `aria-label`s for all navigation links containing emojis or special characters (e.g., `<a href="..." aria-label="Back to Table of Contents">Back to top ↑</a>`).
+
+## 2026-07-20 - [Bidirectional Navigation for Developer Journals]
+
+**Learning:** Internal developer journals often feel isolated and difficult to navigate when accessed directly from repository files. Standard Markdown return links provide clean, accessible bidirectional navigation pathways for developers without introducing auditory noise for screen readers or cluttering pure-code environments with heavy HTML blocks.
+**Action:** Ensure all newly added or modified developer-focused files include clear standard Markdown "Back to Main README" navigation links at the top to facilitate seamless traversal.
