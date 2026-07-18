@@ -39,3 +39,10 @@
 **Action:** Always use in-place `dirs` pruning with `os.walk` when ignoring large directories like `.git` or `node_modules`.
 
 ---
+
+## 2025-07-17 - Correct-by-construction whole-file pre-filtering
+
+**Learning:** Attempting to optimize regex execution by using fast prefix substring checks on individual lines can introduce security regressions (false negatives) if not all possible matching variations (e.g., camelCase, snake_case, standard PEM structures) are accounted for. Instead, running a fast `cp.search(content)` on the whole file content serves as a robust pre-filter. If it returns False, we can skip the file entirely with 100% safety and correctness.
+**Action:** Use whole-file regex pre-filtering (`search()`) before doing line-by-line (`finditer()`) scanning in security or scanning scripts to gain performance without sacrificing safety.
+
+---
