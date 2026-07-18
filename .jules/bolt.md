@@ -51,3 +51,10 @@
 **Action:** Use whole-file regex pre-filtering (`search()`) before doing line-by-line (`finditer()`) scanning in security or scanning scripts to gain performance without sacrificing safety.
 
 ---
+
+## 2025-07-18 - Overheads of combined regex patterns vs. whole-file lazy scanning
+
+**Learning:** Combining multiple distinct regexes into a single pattern using alternatives (`|`) to optimize scanning can backfire due to the engine's backtracking overhead across different pattern structures. Instead, keeping individual pre-compiled patterns for pre-filtering (using short-circuiting `any`) is faster. However, scanning the entire file content in one pass with `finditer()` and lazily computing line numbers/content (via `str.count` and index searching) only when a match is found delivers a massive ~41% speedup over splitting files line-by-line.
+**Action:** Keep distinct pre-compiled regexes for pre-filtering but perform whole-file single-pass scans, computing line positions and contents on-demand rather than splitting strings upfront.
+
+---

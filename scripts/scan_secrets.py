@@ -21,16 +21,34 @@ def scan_file(filepath):
         if not any(cp.search(content) for cp in PATTERNS.values()):
             return found_issues
 
-        # Detailed line-by-line scanning only if a potential match exists
-        lines = content.splitlines()
-        for line_no, line in enumerate(lines, 1):
-            for label, cp in PATTERNS.items():
-                for match in cp.finditer(line):
-                    matched_str = match.group(0)
-                    if "{" in matched_str and "}" in matched_str:
-                        continue
-                    found_issues.append((line_no, label, line.strip()))
-                    break
+        # ⚡ Bolt: Detailed whole-file scanning only if a potential match exists.
+        # Scanning the whole content in one pass via regex is significantly faster
+        # than splitting the file into thousands of lines and scanning each line.
+        reported_issues = set()
+        for label, cp in PATTERNS.items():
+            for match in cp.finditer(content):
+                matched_str = match.group(0)
+                if "{" in matched_str and "}" in matched_str:
+                    continue
+                start_pos = match.start()
+                # Dynamically calculate the line number (count of preceding newlines)
+                line_no = content.count('\n', 0, start_pos) + 1
+
+                # Maintain original behavior: report at most one secret of each label per line
+                if (line_no, label) in reported_issues:
+                    continue
+                reported_issues.add((line_no, label))
+
+                # Dynamically extract only the matching line content
+                line_start = content.rfind('\n', 0, start_pos) + 1
+                line_end = content.find('\n', match.end())
+                if line_end == -1:
+                    line_end = len(content)
+                line = content[line_start:line_end]
+                found_issues.append((line_no, label, line.strip()))
+
+        # Maintain consistent sorted output by line number
+        found_issues.sort(key=lambda x: x[0])
     except Exception as e:
         print(f"Error reading {filepath}: {e}")
     return found_issues
