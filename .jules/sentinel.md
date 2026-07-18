@@ -54,3 +54,20 @@ the same line.
 **Prevention:** Always iterate through all matches on a line using `finditer()`
 (or global/multiline flags) and only skip the line if *all* matched occurrences
 are valid, non-leaking patterns or placeholders.
+
+## 2026-07-18 - [Modern OpenAI Key Bypass in Secret Scanner]
+
+**Vulnerability:** Modern OpenAI API key formats containing hyphens and
+underscores (e.g., `sk-proj-`) bypassed the secret scanner entirely because
+the regex pattern restrictively matched only alphanumeric characters
+`[a-zA-Z0-9]{32,}`.
+
+**Learning:** Regex definitions must be periodically updated to match the
+evolving formats of modern keys and credentials. Without proper coverage
+for special characters like hyphens or underscores in key prefixes, scanning
+tools suffer from false negatives and allow credentials to be leaked silently.
+
+**Prevention:** Broaden pattern matching characters to allow `[a-zA-Z0-9_\-]`
+in credential payloads, and verify regex coverage through dedicated unit tests
+(`test_scan_secrets.py`) that simulate modern key formats using dynamic
+concatenation.
