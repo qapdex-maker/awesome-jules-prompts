@@ -82,3 +82,25 @@ def test_generic_token(run_scan):
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Generic Token"
+
+def test_github_classic_token(run_scan):
+    # ghp_ format, length of 40 total
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "ghp_" + "1234567890abcdefghijklmnopqrstuvwxyz12'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "GitHub Token"
+
+def test_github_fine_grained_token(run_scan):
+    # github_pat_ format
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "github_pat_" + "1234567890abcdefghijkl_1234567890abcdefghijklmnopqrstuvwx_1234567890'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "GitHub Token"
+
+def test_github_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "ghp_" + "{GITHUB_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
