@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 -->
 [← Back to Main README](../README.md)
 
 ---

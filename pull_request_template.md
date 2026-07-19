@@ -1,3 +1,6 @@
+> [!TIP]
+> First time contributing? Please review our [Contributing Guide](contributing.md) for style requirements and navigation conventions.
+
 ### Description
 
 Please provide a brief description of your addition or change.
