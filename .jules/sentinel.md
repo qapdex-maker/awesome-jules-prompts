@@ -71,3 +71,21 @@ tools suffer from false negatives and allow credentials to be leaked silently.
 in credential payloads, and verify regex coverage through dedicated unit tests
 (`test_scan_secrets.py`) that simulate modern key formats using dynamic
 concatenation.
+
+## 2026-07-21 - [GitHub Token Bypass in Secret Scanner]
+
+**Vulnerability:** The repository's secret scanner lacked pattern definitions
+to detect leaked classic or fine-grained GitHub Personal Access Tokens (PATs)
+and other GitHub credentials.
+
+**Learning:** When scanning for developer-centric credentials in repositories
+with high contributor volume (even doc-only), ignoring common platform-specific
+credential formats like `ghp_` or `github_pat_` creates a blind spot.
+Furthermore, overlapping rules (e.g., a "Generic Token" keyword rule and a specific
+"GitHub Token" rule) can trigger dual/overlapping matches if variables or test cases
+unintentionally share keywords like `github_token`.
+
+**Prevention:** Add explicit pattern definitions covering all classic, fine-grained,
+and temp/installation GitHub token formats to `scan_secrets.py`. When writing tests
+for specific patterns, avoid using generic keywords in assignment statements
+to prevent rule collisions.

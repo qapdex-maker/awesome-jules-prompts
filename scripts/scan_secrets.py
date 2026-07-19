@@ -9,6 +9,7 @@ PATTERNS = {
     "OpenAI API Key": re.compile(r"sk-(?:[a-zA-Z0-9_\-]{32,}|\{[a-zA-Z0-9_\-]+\})"),
     "AWS Access Key": re.compile(r"(?:AKIA|ASIA)(?:[0-9A-Z]{16}|\{[a-zA-Z0-9_\-]+\})"),
     "Google API Key": re.compile(r"AIzaSy(?:[A-Za-z0-9_-]{33}|\{[a-zA-Z0-9_\-]+\})"),
+    "GitHub Token": re.compile(r"(?:gh[pousr]_|github_pat_)(?:[a-zA-Z0-9_]{36,}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 def scan_file(filepath):
