@@ -104,3 +104,25 @@ def test_github_placeholder_ignored(run_scan):
     content = "val = '" + "ghp_" + "{GITHUB_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_anthropic_api03_key(run_scan):
+    # Anthropic api03 key format, sk-ant-api03- followed by 93 chars and AA
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "sk-ant-" + "api03-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrsAA'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Anthropic API Key"
+
+def test_anthropic_admin01_key(run_scan):
+    # Anthropic admin01 key format, sk-ant-admin01- followed by 93 chars and AA
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "sk-ant-" + "admin01-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrsAA'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Anthropic API Key"
+
+def test_anthropic_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "sk-ant-" + "{ANTHROPIC_API_KEY}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
