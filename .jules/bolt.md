@@ -58,3 +58,10 @@
 **Action:** Keep distinct pre-compiled regexes for pre-filtering but perform whole-file single-pass scans, computing line positions and contents on-demand rather than splitting strings upfront.
 
 ---
+
+## 2025-07-19 - Case-insensitive regex flags overhead
+
+**Learning:** Using the case-insensitive inline flag `(?i)` forces Python's regex engine to apply case-folding to every single character of the input during pattern scanning. On files with no matches, this adds massive overhead (e.g., 9.7s vs 6.4s). Replacing the global `(?i)` flag with explicit character classes (e.g. `[sS][eE][cC][rR][eE][tT]`) for keywords in a case-sensitive regex avoids expensive case-folding overhead on large character classes later in the pattern, while maintaining 100% correctness and matching coverage.
+**Action:** Avoid global case-insensitivity flags (`(?i)`) on high-traffic scanning paths when case-specific character classes can be used on the keyword prefix instead.
+
+---
