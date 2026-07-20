@@ -47,3 +47,8 @@
 
 **Learning:** Internal developer journals often feel isolated and difficult to navigate when accessed directly from repository files. Standard Markdown return links provide clean, accessible bidirectional navigation pathways for developers without introducing auditory noise for screen readers or cluttering pure-code environments with heavy HTML blocks.
 **Action:** Ensure all newly added or modified developer-focused files include clear standard Markdown "Back to Main README" navigation links at the top to facilitate seamless traversal.
+
+## 2026-07-22 - [Frictionless Workflow Links & Auditory Polish]
+
+**Learning:** Bullet lists with decorative emojis placed outside labeled anchors can cause visual delight but lead to unnecessary auditory noise for screen reader users when announced character-by-character. Additionally, in contributing guides, converting plaintext file names and workflow references into accessible, direct links (like linking straight to the README or the Pull Requests submission page) dramatically reduces friction and speeds up contributor workflows.
+**Action:** Always wrap purely decorative list emojis in `<span aria-hidden="true">` to preserve visual charm while ensuring a quiet screen reader experience, and proactively convert process-related text into direct, fully labeled HTML links to optimize navigation pathways.
