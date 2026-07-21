@@ -47,3 +47,8 @@
 
 **Learning:** Internal developer journals often feel isolated and difficult to navigate when accessed directly from repository files. Standard Markdown return links provide clean, accessible bidirectional navigation pathways for developers without introducing auditory noise for screen readers or cluttering pure-code environments with heavy HTML blocks.
 **Action:** Ensure all newly added or modified developer-focused files include clear standard Markdown "Back to Main README" navigation links at the top to facilitate seamless traversal.
+
+## 2026-07-22 - [Plaintext Conversion to Accessible Links & Bullet Emoji Polish]
+
+**Learning:** Plaintext references to other documents and process indicators (e.g., repository filenames or pull request guidelines) in process guides (such as contributing.md) introduce navigation friction. Converting these into accessible HTML links with proper ARIA labels makes navigation fluid and screen-reader friendly. Furthermore, purely decorative emojis used as bullets should be hidden from screen readers using `aria-hidden="true"` to suppress auditory noise.
+**Action:** Always convert plaintext document references to accessible links and wrap decorative list/bullet emojis in `<span aria-hidden="true">` to improve clarity and screen reader user experience.

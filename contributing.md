@@ -8,11 +8,11 @@ Thank you for considering contributing to **Awesome Jules Prompts**!
 
 ## How to Contribute
 
-- We have a [Pull Request Template](pull_request_template.md) to help you get started.
+- We have a <a href="pull_request_template.md" aria-label="Read our Pull Request Template">Pull Request Template</a> to help you get started.
 
-- Add a new prompt to the appropriate section in `README.md`.
+- Add a new prompt to the appropriate section in <a href="README.md" aria-label="Read our Main README">README.md</a>.
 - Keep prompts concise and clear.
-- Submit a pull request and describe your change.
+- Submit a <a href="https://github.com/qapdex-maker/awesome-jules-prompts/pulls" target="_blank" rel="noopener noreferrer" aria-label="Open a Pull Request (opens in a new tab)">pull request</a> and describe your change.
 
 ## Style Guide
 

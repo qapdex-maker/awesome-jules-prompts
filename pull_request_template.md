@@ -1,5 +1,5 @@
 > [!TIP]
-> First time contributing? Please review our [Contributing Guide](contributing.md) for style requirements and navigation conventions.
+> First time contributing? Please review our <a href="contributing.md" aria-label="Read our Contributing Guide">Contributing Guide</a> for style requirements and navigation conventions.
 
 ### Description
 
