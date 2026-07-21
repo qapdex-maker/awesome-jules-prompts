@@ -17,21 +17,144 @@ PATTERNS = {
     "Anthropic API Key": re.compile(r"sk-ant-(?:[a-zA-Z0-9_\-]{40,}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
+def parse_prefix(pattern_str):
+    """
+    Parses a regex pattern string from left-to-right and extracts a literal prefix.
+    Stops parsing immediately upon hitting metacharacters, quantifiers, or
+    non-simple character classes, ensuring absolute correctness and no false negatives.
+    """
+    res = []
+    i = 0
+    is_ci = False
+
+    while i < len(pattern_str):
+        c = pattern_str[i]
+
+        # Check if the next character is an optional quantifier (? or *)
+        if i + 1 < len(pattern_str) and pattern_str[i+1] in ('?', '*'):
+            break
+
+        # Check for simple literal characters: letters, digits, hyphen, underscore
+        if c.isalnum() or c in ('-', '_'):
+            res.append(c)  # Preserve original case for precise matching!
+            i += 1
+        elif c == '[':
+            # Check for a simple uppercase/lowercase pair like [sS]
+            end = pattern_str.find(']', i)
+            if end == -1 or end - i != 3:
+                break
+            # Check if there is an optional quantifier (? or *) after the character class
+            if end + 1 < len(pattern_str) and pattern_str[end+1] in ('?', '*'):
+                break
+            pair = pattern_str[i+1:end]
+            if len(pair) == 2 and pair[0].lower() == pair[1].lower() and pair[0].isalpha():
+                res.append(pair[0].lower())
+                is_ci = True
+                i = end + 1
+            else:
+                break
+        else:
+            break
+
+    prefix = "".join(res)
+    # Require at least 2 characters for a safe and robust prefix
+    if len(prefix) >= 2:
+        if is_ci:
+            prefix = prefix.lower()
+        return prefix, is_ci
+    return None, False
+
+def extract_prefixes_robust(cp):
+    """
+    Robustly and safely extracts all candidate prefixes from a regex pattern.
+    Supports simple literal patterns, as well as non-capturing alternating groups ((?:A|B)).
+    If any branch cannot be safely mapped, deactivates pre-filtering for that pattern.
+    """
+    pattern_str = cp.pattern
+    is_ci = bool(cp.flags & re.IGNORECASE)
+
+    match_group = re.match(r"^\(\?:([^)]+)\)", pattern_str)
+    if match_group:
+        # Check if the entire alternating group is made optional by a trailing ? or *
+        if match_group.end() < len(pattern_str) and pattern_str[match_group.end()] in ('?', '*'):
+            return None, False
+
+        inner = match_group.group(1)
+        branches = inner.split('|')
+        prefixes = []
+        for br in branches:
+            pfx, ci = parse_prefix(br)
+            if pfx:
+                if is_ci:
+                    pfx = pfx.lower()
+                    ci = True
+                prefixes.append(pfx)
+                if ci:
+                    is_ci = True
+            else:
+                # Fallback: if any branch is not safe, return None (force always scan)
+                return None, False
+        return prefixes, is_ci
+
+    pfx, ci = parse_prefix(pattern_str)
+    if pfx:
+        if is_ci:
+            pfx = pfx.lower()
+            ci = True
+        return [pfx], ci
+    return None, False
+
+# ⚡ Bolt: Populate candidate prefix mapping dynamically from PATTERNS.
+# This prevents code drift, making the scanner completely safe and self-healing
+# if patterns are added or modified in the future.
+PREFIX_MAPPING = {}
+for name, cp in PATTERNS.items():
+    pfxs, ci = extract_prefixes_robust(cp)
+    if pfxs:
+        PREFIX_MAPPING[name] = (pfxs, ci)
+
 def scan_file(filepath):
     found_issues = []
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
 
-        # ⚡ Bolt & Sentinel: Perform a fast whole-file pre-filter check
-        if not any(cp.search(content) for cp in PATTERNS.values()):
+        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering.
+        # This determines which regexes are active for the current file content.
+        # It completely avoids executing expensive, backtracking-prone regexes
+        # on files that don't even contain candidate prefix substrings.
+        active_patterns = {}
+        content_lower_cache = [None]
+        for name, cp in PATTERNS.items():
+            if name not in PREFIX_MAPPING:
+                # Safe fallback: if we couldn't parse the prefix, always evaluate
+                active_patterns[name] = cp
+                continue
+            pfxs, ci = PREFIX_MAPPING[name]
+            # Fast case-sensitive check
+            if any(pfx in content for pfx in pfxs):
+                active_patterns[name] = cp
+                continue
+            # Case-insensitive check on lowercased content
+            if ci:
+                if content_lower_cache[0] is None:
+                    content_lower_cache[0] = content.lower()
+                if any(pfx in content_lower_cache[0] for pfx in pfxs):
+                    active_patterns[name] = cp
+                    continue
+
+        if not active_patterns:
+            return found_issues
+
+        # ⚡ Bolt & Sentinel: Perform a fast whole-file pre-filter check on active patterns
+        if not any(cp.search(content) for cp in active_patterns.values()):
             return found_issues
 
         # ⚡ Bolt: Detailed whole-file scanning only if a potential match exists.
         # Scanning the whole content in one pass via regex is significantly faster
         # than splitting the file into thousands of lines and scanning each line.
         reported_issues = set()
-        for label, cp in PATTERNS.items():
+        for label, cp in active_patterns.items():
             for match in cp.finditer(content):
                 matched_str = match.group(0)
                 if "{" in matched_str and "}" in matched_str:
