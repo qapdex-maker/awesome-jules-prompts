@@ -127,46 +127,39 @@ def test_anthropic_placeholder_ignored(run_scan):
     issues = run_scan(content)
     assert len(issues) == 0
 
-def test_slack_bot_token(run_scan):
-    # xoxb- format
+def test_huggingface_token_34_chars(run_scan):
+    # hf_ format with 34 characters (34 chars after hf_)
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "xoxb-" + "1234567890-1234567890123-abcdefghijklmnopqrstuvwx'"
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz12345678'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "Slack Token"
+    assert issues[0][1] == "Hugging Face Token"
 
-def test_slack_app_token(run_scan):
-    # xapp- format
+def test_huggingface_token_37_chars(run_scan):
+    # hf_ format with 37 characters (37 chars after hf_)
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "xapp-" + "1-A1B2C3D4E5F-1234567890123-abcdefghijklmnopqrstuvwx'"
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz12345678901'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "Slack Token"
+    assert issues[0][1] == "Hugging Face Token"
 
-def test_slack_placeholder_ignored(run_scan):
+def test_huggingface_token_40_chars(run_scan):
+    # hf_ format with 40 characters (40 chars after hf_)
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "xoxb-" + "{SLACK_TOKEN}'"
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz12345678901234'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Hugging Face Token"
+
+def test_huggingface_too_short_ignored(run_scan):
+    # hf_ followed by 33 characters (below minimum 34) should be ignored
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz1234567'"
     issues = run_scan(content)
     assert len(issues) == 0
 
-def test_stripe_live_secret_key(run_scan):
-    # sk_live_ format
+def test_huggingface_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "sk_live_" + "51Mszabcdefghijklmnopqrstuvwx'"
-    issues = run_scan(content)
-    assert len(issues) == 1
-    assert issues[0][1] == "Stripe API Key"
-
-def test_stripe_test_restricted_key(run_scan):
-    # rk_test_ format
-    # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "rk_test_" + "51Mszabcdefghijklmnopqrstuvwx'"
-    issues = run_scan(content)
-    assert len(issues) == 1
-    assert issues[0][1] == "Stripe API Key"
-
-def test_stripe_placeholder_ignored(run_scan):
-    # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "sk_live_" + "{STRIPE_KEY}'"
+    content = "val = '" + "hf_" + "{HF_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0

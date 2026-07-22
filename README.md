@@ -314,8 +314,8 @@
 
 Your contributions are welcome! Add new prompts, fix formatting, or suggest categories.
 
-- 📄 <a href="contributing.md" aria-label="Read our Contributing Guide">Contributing Guide</a>
-- 🪄 Open a <a href="https://github.com/qapdex-maker/awesome-jules-prompts/pulls" target="_blank" rel="noopener noreferrer" aria-label="Open a Pull Request (opens in a new tab)">Pull Request</a>
+- <span aria-hidden="true">📄</span> <a href="contributing.md" aria-label="Read our Contributing Guide">Contributing Guide</a>
+- <span aria-hidden="true">🪄</span> Open a <a href="https://github.com/qapdex-maker/awesome-jules-prompts/pulls" target="_blank" rel="noopener noreferrer" aria-label="Open a Pull Request (opens in a new tab)">Pull Request</a>
 
 ---
 
