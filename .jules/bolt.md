@@ -80,3 +80,10 @@ case-insensitive substring checks using Python's 'in' operator before executing
 complex regex patterns.
 
 ---
+
+## 2025-07-22 - Replacing generator expressions with explicit loops for small iterables
+
+**Learning:** Python generator expressions (e.g. `any(x in y for x in list)`) introduce noticeable overhead due to generator frame allocation, execution suspension, and yield/resume context switching. For high-traffic code paths operating on small arrays (such as checking matching candidate prefixes or searching active regex patterns), a simple, explicit `for` loop avoids all generator allocation and context switching overhead entirely, executing purely in the local frame. Additionally, caching objects in standard local variables rather than list-wrapped structures eliminates unnecessary index lookup overhead.
+**Action:** Replace generator expressions with explicit, fast-failing `for` loops in performance-critical code paths that iterate over small lists.
+
+---
