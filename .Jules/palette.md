@@ -52,3 +52,13 @@
 
 **Learning:** Plaintext references to other documents and process indicators (e.g., repository filenames or pull request guidelines) in process guides (such as contributing.md) introduce navigation friction. Converting these into accessible HTML links with proper ARIA labels makes navigation fluid and screen-reader friendly. Furthermore, purely decorative emojis used as bullets should be hidden from screen readers using `aria-hidden="true"` to suppress auditory noise.
 **Action:** Always convert plaintext document references to accessible links and wrap decorative list/bullet emojis in `<span aria-hidden="true">` to improve clarity and screen reader user experience.
+
+## 2026-07-23 - [Style Guide Navigation Conversion]
+
+**Learning:** Document references embedded in style guide list items (such as
+`README.md` references in `contributing.md`) are often left as plaintext,
+which breaks navigation flow for contributors attempting to follow instructions.
+Converting these references to fully accessible HTML links with proper ARIA
+labels provides a frictionless way to jump back to the target file.
+**Action:** Convert style guide plaintext file references to accessible HTML
+links to maintain fluent cross-document navigation.
