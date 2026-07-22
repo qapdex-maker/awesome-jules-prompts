@@ -15,6 +15,8 @@ PATTERNS = {
     "Google API Key": re.compile(r"AIzaSy(?:[A-Za-z0-9_-]{33}|\{[a-zA-Z0-9_\-]+\})"),
     "GitHub Token": re.compile(r"(?:gh[pousr]_|github_pat_)(?:[a-zA-Z0-9_]{36,}|\{[a-zA-Z0-9_\-]+\})"),
     "Anthropic API Key": re.compile(r"sk-ant-(?:[a-zA-Z0-9_\-]{40,}|\{[a-zA-Z0-9_\-]+\})"),
+    "Slack Token": re.compile(r"(?:xox[bprs]|xapp)-(?:[a-zA-Z0-9_\-]{20,}|\{[a-zA-Z0-9_\-]+\})"),
+    "Stripe API Key": re.compile(r"(?:sk|rk)_(?:live|test)_(?:[a-zA-Z0-9_]{24,}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 def scan_file(filepath):

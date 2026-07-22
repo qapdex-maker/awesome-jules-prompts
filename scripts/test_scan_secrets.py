@@ -126,3 +126,47 @@ def test_anthropic_placeholder_ignored(run_scan):
     content = "val = '" + "sk-ant-" + "{ANTHROPIC_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_slack_bot_token(run_scan):
+    # xoxb- format
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "xoxb-" + "1234567890-1234567890123-abcdefghijklmnopqrstuvwx'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Slack Token"
+
+def test_slack_app_token(run_scan):
+    # xapp- format
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "xapp-" + "1-A1B2C3D4E5F-1234567890123-abcdefghijklmnopqrstuvwx'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Slack Token"
+
+def test_slack_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "xoxb-" + "{SLACK_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_stripe_live_secret_key(run_scan):
+    # sk_live_ format
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "sk_live_" + "51Mszabcdefghijklmnopqrstuvwx'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Stripe API Key"
+
+def test_stripe_test_restricted_key(run_scan):
+    # rk_test_ format
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "rk_test_" + "51Mszabcdefghijklmnopqrstuvwx'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Stripe API Key"
+
+def test_stripe_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "sk_live_" + "{STRIPE_KEY}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
