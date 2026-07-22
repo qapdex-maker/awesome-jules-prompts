@@ -126,3 +126,40 @@ def test_anthropic_placeholder_ignored(run_scan):
     content = "val = '" + "sk-ant-" + "{ANTHROPIC_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_huggingface_token_34_chars(run_scan):
+    # hf_ format with 34 characters (34 chars after hf_)
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz12345678'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Hugging Face Token"
+
+def test_huggingface_token_37_chars(run_scan):
+    # hf_ format with 37 characters (37 chars after hf_)
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz12345678901'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Hugging Face Token"
+
+def test_huggingface_token_40_chars(run_scan):
+    # hf_ format with 40 characters (40 chars after hf_)
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz12345678901234'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Hugging Face Token"
+
+def test_huggingface_too_short_ignored(run_scan):
+    # hf_ followed by 33 characters (below minimum 34) should be ignored
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "hf_" + "abcdefghijklmnopqrstuvwxyz1234567'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_huggingface_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "val = '" + "hf_" + "{HF_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
