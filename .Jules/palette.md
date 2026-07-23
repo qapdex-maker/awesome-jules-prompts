@@ -62,3 +62,8 @@ Converting these references to fully accessible HTML links with proper ARIA
 labels provides a frictionless way to jump back to the target file.
 **Action:** Convert style guide plaintext file references to accessible HTML
 links to maintain fluent cross-document navigation.
+
+## 2026-07-24 - [Hiding Decorative List Emojis for Screen Readers]
+
+**Learning:** When using custom emojis next to markdown list items to add visual flair and improve readability, screen readers will verbally read out each emoji's name, which can be repetitive and noisy. Wrapping decorative emojis inside an inline `<span aria-hidden="true">` element hides them from assistive technology while maintaining the delightful visual polish for standard displays.
+**Action:** Always wrap decorative bullet/list emojis in `<span aria-hidden="true">` when adding visual indicators to list items to keep the screen reader auditory experience clean and focused.
