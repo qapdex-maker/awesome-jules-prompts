@@ -163,3 +163,43 @@ def test_huggingface_placeholder_ignored(run_scan):
     content = "val = '" + "hf_" + "{HF_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_slack_token_xoxb(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "slack_val = '" + "xoxb-" + "123456789012-345678901234-567890123456789012345678'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Slack Token"
+
+def test_slack_token_xoxp(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "slack_val = '" + "xoxp-" + "1234567890-12345678901-2345678901-2345678901'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Slack Token"
+
+def test_slack_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "slack_val = '" + "xoxb-" + "{SLACK_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_stripe_test_key(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "stripe_val = '" + "sk_test_" + "51AzSyA1B2C3D4E5F6G7H8I9J0K1L2M'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Stripe API Key"
+
+def test_stripe_live_key(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "stripe_val = '" + "sk_live_" + "51AzSyA1B2C3D4E5F6G7H8I9J0K1L2M'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Stripe API Key"
+
+def test_stripe_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "stripe_val = '" + "sk_live_" + "{STRIPE_API_KEY}'"
+    issues = run_scan(content)
+    assert len(issues) == 0

@@ -16,6 +16,8 @@ PATTERNS = {
     "GitHub Token": re.compile(r"(?:gh[pousr]_|github_pat_)(?:[a-zA-Z0-9_]{36,}|\{[a-zA-Z0-9_\-]+\})"),
     "Anthropic API Key": re.compile(r"sk-ant-(?:[a-zA-Z0-9_\-]{40,}|\{[a-zA-Z0-9_\-]+\})"),
     "Hugging Face Token": re.compile(r"hf_(?:[a-zA-Z0-9]{34,40}|\{[a-zA-Z0-9_\-]+\})"),
+    "Slack Token": re.compile(r"(?:xoxb-|xoxp-|xoxr-|xoxs-|xapp-)(?:[a-zA-Z0-9_\-]{20,}|\{[a-zA-Z0-9_\-]+\})"),
+    "Stripe API Key": re.compile(r"(?:sk_live_|sk_test_|rk_live_|rk_test_)(?:[a-zA-Z0-9_]{24,}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 def parse_prefix(pattern_str):
