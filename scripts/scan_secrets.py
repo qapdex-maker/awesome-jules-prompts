@@ -18,6 +18,8 @@ PATTERNS = {
     "Hugging Face Token": re.compile(r"hf_(?:[a-zA-Z0-9]{34,40}|\{[a-zA-Z0-9_\-]+\})"),
     "Slack Token": re.compile(r"(?:xoxb-|xoxp-|xoxr-|xoxs-|xapp-)(?:[a-zA-Z0-9_\-]{20,}|\{[a-zA-Z0-9_\-]+\})"),
     "Stripe API Key": re.compile(r"(?:sk_live_|sk_test_|rk_live_|rk_test_)(?:[a-zA-Z0-9_]{24,}|\{[a-zA-Z0-9_\-]+\})"),
+    "Groq API Key": re.compile(r"gsk_(?:[a-zA-Z0-9_]{52,}|\{[a-zA-Z0-9_\-]+\})"),
+    "Replicate API Token": re.compile(r"r8_(?:[a-zA-Z0-9_]{37,}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 def parse_prefix(pattern_str):
