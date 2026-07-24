@@ -203,3 +203,29 @@ def test_stripe_placeholder_ignored(run_scan):
     content = "stripe_val = '" + "sk_live_" + "{STRIPE_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_groq_api_key(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "groq_val = '" + "gsk_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Groq API Key"
+
+def test_groq_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "groq_val = '" + "gsk_" + "{GROQ_API_KEY}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_replicate_api_token(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "replicate_val = '" + "r8_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Replicate API Token"
+
+def test_replicate_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "replicate_val = '" + "r8_" + "{REPLICATE_API_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0

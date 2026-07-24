@@ -89,3 +89,19 @@ unintentionally share keywords like `github_token`.
 and temp/installation GitHub token formats to `scan_secrets.py`. When writing tests
 for specific patterns, avoid using generic keywords in assignment statements
 to prevent rule collisions.
+
+## 2026-07-23 - [Leaked Groq and Replicate AI Credentials]
+
+**Vulnerability:** Lack of dedicated secret scanner patterns for popular AI
+developer services like Groq and Replicate. This created a potential blind
+spot where developers contributing prompt configurations or example integrations
+could accidentally leak live `gsk_` Groq keys or `r8_` Replicate API tokens.
+
+**Learning:** In AI-centric and prompt-curation repositories, the threat model
+extends beyond generic or classic cloud credentials to modern AI-native service
+API keys. Coverage must be kept complete by adding specific rules for rising
+and widely adopted AI platforms.
+
+**Prevention:** Regularly audit active prompt examples and expand the pre-commit
+scanner (`scan_secrets.py`) patterns to cover specialized AI API credential
+formats as they emerge, verifying each with dedicated unit tests.
