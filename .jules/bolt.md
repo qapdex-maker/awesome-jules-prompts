@@ -94,3 +94,10 @@ complex regex patterns.
 **Action:** Always filter multi-pattern scan tasks using a fast `search` check first, and only call `finditer` on the sub-patterns that are guaranteed to have a match.
 
 ---
+
+## 2026-07-24 - Pre-compiled scanning pipelines over per-file dictionary lookups
+
+**Learning:** When scanning a repository file-by-file with multiple regex patterns and candidate prefix mappings, performing dictionary lookups (e.g., `name not in PREFIX_MAPPING`) and dictionary instantiation/items-looping inside the `scan_file` function adds noticeable per-file overhead. Pre-binding and compiling the pattern regexes and prefix data into a single, unified list of tuples (`PIPELINE`) at module level entirely bypasses dictionary overhead in the file scanning loop, yielding a cleaner and faster execution path.
+**Action:** Pre-compile multi-step search/pre-filter pipelines into module-level lists of tuples rather than dynamically querying dictionary structures during high-traffic file traversal loops.
+
+---

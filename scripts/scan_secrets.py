@@ -118,27 +118,37 @@ for name, cp in PATTERNS.items():
     if pfxs:
         PREFIX_MAPPING[name] = (pfxs, ci)
 
+# ⚡ Bolt: Pre-compile a unified, high-performance scanning pipeline.
+# By combining patterns and prefix information into a static list of tuples (PIPELINE) at module level,
+# we completely bypass dictionary lookups, .items() dictionary instantiations, and membership checks
+# during the per-file scanning hot path, significantly boosting iteration efficiency and scanning speed.
+PIPELINE = []
+for name, cp in PATTERNS.items():
+    if name in PREFIX_MAPPING:
+        pfxs, ci = PREFIX_MAPPING[name]
+        PIPELINE.append((name, cp, pfxs, ci))
+    else:
+        PIPELINE.append((name, cp, None, False))
+
 def scan_file(filepath):
     found_issues = []
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
 
-        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering.
+        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering via the pre-compiled PIPELINE.
         # This determines which regexes are active for the current file content.
         # It completely avoids executing expensive, backtracking-prone regexes
         # on files that don't even contain candidate prefix substrings.
-        # Optimization: Replacing generator expressions and wrapping list caches with
-        # simple local variables and explicit fast-failing loops avoids generator context-switching
-        # and index lookup overhead, yielding up to ~15% matching speedup and ~2% clean speedup.
-        active_patterns = {}
+        # Optimization: Iterating over a pre-compiled list of tuples directly and avoiding dictionary allocation/lookups
+        # eliminates dictionary overhead in the file scanning loop, yielding a cleaner and even faster hot path.
+        active_patterns = []
         content_lower = None
-        for name, cp in PATTERNS.items():
-            if name not in PREFIX_MAPPING:
+        for name, cp, pfxs, ci in PIPELINE:
+            if pfxs is None:
                 # Safe fallback: if we couldn't parse the prefix, always evaluate
-                active_patterns[name] = cp
+                active_patterns.append((name, cp))
                 continue
-            pfxs, ci = PREFIX_MAPPING[name]
 
             # Fast case-sensitive check using a simple loop
             matched = False
@@ -147,7 +157,7 @@ def scan_file(filepath):
                     matched = True
                     break
             if matched:
-                active_patterns[name] = cp
+                active_patterns.append((name, cp))
                 continue
 
             # Case-insensitive check on lowercased content
@@ -160,7 +170,7 @@ def scan_file(filepath):
                         matched_ci = True
                         break
                 if matched_ci:
-                    active_patterns[name] = cp
+                    active_patterns.append((name, cp))
                     continue
 
         if not active_patterns:
@@ -169,9 +179,9 @@ def scan_file(filepath):
         # ⚡ Bolt & Sentinel: Perform a fast whole-file pre-filter check on active patterns
         # and keep track of which patterns actually matched the search.
         # This completely avoids running cp.finditer over the entire file content
-        # for non-matching patterns, yielding up to a ~35% speedup when scanning matching files.
+        # for non-matching patterns.
         matching_patterns = []
-        for label, cp in active_patterns.items():
+        for label, cp in active_patterns:
             if cp.search(content):
                 matching_patterns.append((label, cp))
 
