@@ -105,3 +105,19 @@ and widely adopted AI platforms.
 **Prevention:** Regularly audit active prompt examples and expand the pre-commit
 scanner (`scan_secrets.py`) patterns to cover specialized AI API credential
 formats as they emerge, verifying each with dedicated unit tests.
+
+## 2026-07-24 - [Google AI Studio / Gemini API Auth Key Format Transition]
+
+**Vulnerability:** Legacy secret scanner patterns only scanned for the old
+standard Google API key prefix (`AIzaSy...`). This left a massive security
+gap / blindspot for modern Google AI Studio and Gemini API "Authorization"
+keys starting with the `AQ.` prefix.
+
+**Learning:** Platforms continuously update their security postures and
+credential formats to improve authorization and revocation controls. Scanning
+systems must adapt to detect both legacy and next-generation patterns to
+prevent silent leakages.
+
+**Prevention:** Broaden pattern matching characters and prefixes to recognize
+both traditional `AIzaSy...` keys and the newly introduced `AQ.` auth keys, and
+verify coverage with robust unit testing.

@@ -62,6 +62,19 @@ def test_google_api_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Google API Key"
 
+def test_google_aq_api_key(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "my_val = '" + "AQ." + "Ab8RN6K1234567890123456789012345678901234567890'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Google API Key"
+
+def test_google_aq_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "my_val = '" + "AQ." + "{GOOGLE_API_KEY}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
 def test_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "openai_key = '" + "sk-" + "{OPENAI_API_KEY}'"
