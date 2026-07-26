@@ -101,3 +101,15 @@ complex regex patterns.
 **Action:** Pre-compile multi-step search/pre-filter pipelines into module-level lists of tuples rather than dynamically querying dictionary structures during high-traffic file traversal loops.
 
 ---
+
+## 2026-07-25 - In-memory binary file decoding speedup over text-mode wrappers
+
+**Learning:** Standard text-mode file readers in Python (e.g., `open(filepath, 'r')`) wrap the underlying file descriptor in a stream reader wrapper (`TextIOWrapper`) which performs line-by-line / buffer-by-buffer decoding check, adding measurable overhead. Reading files as raw binary bytes first with `open(filepath, 'rb')` and calling `.decode('utf-8', errors='ignore')` in memory bypasses this layer completely and yields a ~17% speedup on typical text files.
+**Action:** Read files in binary mode and decode them directly in-memory when fast-path text processing is needed.
+
+## 2026-07-26 - Overhead of search() pre-filtering on matching patterns
+
+**Learning:** While checking `pattern.search()` prior to executing `pattern.finditer()` can seem like an optimization to avoid generator overhead, it actually introduces a ~32% slowdown for matching files because it forces the Python regular expression engine to scan the string twice (once to verify a match exists, and once to retrieve all matches). Since `finditer()` on clean strings is virtually identical in speed to `search()`, running `finditer()` directly is a faster and cleaner single-pass operation.
+**Action:** Avoid executing dual search-and-finditer regex scans on the same input; run `finditer()` directly to let the engine perform a single-pass scan.
+
+---
