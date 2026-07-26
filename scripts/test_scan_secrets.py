@@ -81,6 +81,20 @@ def test_placeholder_ignored(run_scan):
     issues = run_scan(content)
     assert len(issues) == 0
 
+def test_deepseek_api_key(run_scan):
+    # DeepSeek API keys are 32 hex chars after sk-
+    # Concatenated to avoid triggering scanner on this test file
+    content = "my_key = '" + "sk-" + "a1b2c3d4e5f607182930a1b2c3d4e5f6'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "DeepSeek API Key"
+
+def test_deepseek_placeholder_ignored(run_scan):
+    # Concatenated to avoid triggering scanner on this test file
+    content = "my_key = '" + "sk-" + "{DEEPSEEK_API_KEY}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
 def test_multi_match_line_detects_real_secret(run_scan):
     # A placeholder followed by a real key on the same line
     # Concatenated to avoid triggering scanner on this test file
