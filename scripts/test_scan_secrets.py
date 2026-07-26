@@ -256,3 +256,32 @@ def test_replicate_placeholder_ignored(run_scan):
     content = "replicate_val = '" + "r8_" + "{REPLICATE_API_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_ignored_extension_skipped(tmp_path):
+    # Create an image file with a secret-like content
+    filepath = tmp_path / "test_image.png"
+    # Concatenated to avoid triggering scanner on this test file
+    filepath.write_text("aws_key = '" + "AKIA" + "1234567890ABCDEF'")
+    issues = scan_file(str(filepath))
+    assert len(issues) == 0
+
+def test_ignored_filename_skipped(tmp_path):
+    # Create a lock file with a secret-like content
+    filepath = tmp_path / "package-lock.json"
+    # Concatenated to avoid triggering scanner on this test file
+    filepath.write_text("aws_key = '" + "AKIA" + "1234567890ABCDEF'")
+    issues = scan_file(str(filepath))
+    assert len(issues) == 0
+
+def test_empty_file_skipped(tmp_path):
+    filepath = tmp_path / "empty.txt"
+    filepath.write_text("")
+    issues = scan_file(str(filepath))
+    assert len(issues) == 0
+
+def test_binary_file_skipped(tmp_path):
+    # Create a file containing a null byte
+    filepath = tmp_path / "binary.txt"
+    filepath.write_bytes(b"hello\x00world")
+    issues = scan_file(str(filepath))
+    assert len(issues) == 0
