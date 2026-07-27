@@ -67,3 +67,8 @@ links to maintain fluent cross-document navigation.
 
 **Learning:** When using custom emojis next to markdown list items to add visual flair and improve readability, screen readers will verbally read out each emoji's name, which can be repetitive and noisy. Wrapping decorative emojis inside an inline `<span aria-hidden="true">` element hides them from assistive technology while maintaining the delightful visual polish for standard displays.
 **Action:** Always wrap decorative bullet/list emojis in `<span aria-hidden="true">` when adding visual indicators to list items to keep the screen reader auditory experience clean and focused.
+
+## 2026-07-25 - [A11y/UX Balancing between Rendered & Raw Markdown]
+
+**Learning:** While inline HTML like `<span aria-hidden="true">` is excellent for rendering screen-reader-safe decorative emojis in standard read-only documentation (e.g., `SECURITY.md`), using it inside checklists in editable templates (e.g., `pull_request_template.md`) degrades developer experience by introducing visual clutter in raw text editors. In such interactive files, keeping the raw markdown simple and clean is preferred.
+**Action:** Apply `aria-hidden` wrapped decorative emojis to read-only static documentation lists, but keep raw editable templates completely free of inline HTML tags to maintain editing usability.

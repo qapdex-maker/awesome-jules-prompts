@@ -28,7 +28,7 @@
 
 <a id="table-of-contents"></a>
 
-## Table of Contents
+## Table of Contents 📖
 
 - <a href="#everyday-dev-tasks" aria-label="Everyday Dev Tasks">Everyday Dev Tasks 🛠️</a>
 - <a href="#debugging" aria-label="Debugging">Debugging 🐞</a>
