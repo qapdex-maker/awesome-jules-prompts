@@ -285,3 +285,43 @@ def test_binary_file_skipped(tmp_path):
     filepath.write_bytes(b"hello\x00world")
     issues = scan_file(str(filepath))
     assert len(issues) == 0
+
+def test_gitlab_legacy_token(run_scan):
+    # Legacy GitLab PAT: glpat- followed by exactly 20 characters
+    # Concatenated to avoid triggering scanner on this test file
+    content = "my_val = '" + "glpat-" + "12345678901234567890'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "GitLab Access Token"
+
+def test_gitlab_legacy_token_too_short_ignored(run_scan):
+    # Legacy GitLab PAT: 19 characters (too short)
+    content = "my_val = '" + "glpat-" + "1234567890123456789'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_gitlab_legacy_token_too_long_ignored(run_scan):
+    # Legacy GitLab PAT: 21 characters (too long, not routable)
+    content = "my_val = '" + "glpat-" + "123456789012345678901'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_gitlab_routable_token(run_scan):
+    # Routable GitLab PAT: glpat- followed by 27-300 characters, a dot, and 9 characters
+    # Concatenated to avoid triggering scanner on this test file
+    content = "my_val = '" + "glpat-" + "123456789012345678901234567.123456789'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "GitLab Access Token"
+
+def test_gitlab_routable_token_invalid_hash_ignored(run_scan):
+    # Routable GitLab PAT: 8 characters after dot instead of 9
+    content = "my_val = '" + "glpat-" + "123456789012345678901234567.12345678'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+def test_gitlab_placeholder_ignored(run_scan):
+    # Placeholder format: glpat-{GITLAB_TOKEN}
+    content = "my_val = '" + "glpat-" + "{GITLAB_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
