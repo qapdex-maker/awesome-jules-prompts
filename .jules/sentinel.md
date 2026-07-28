@@ -121,3 +121,21 @@ prevent silent leakages.
 **Prevention:** Broaden pattern matching characters and prefixes to recognize
 both traditional `AIzaSy...` keys and the newly introduced `AQ.` auth keys, and
 verify coverage with robust unit testing.
+
+## 2026-07-26 - [GitLab Access Token Scanning and Multi-Format Support]
+
+**Vulnerability:** Lack of secret scanner pattern coverage for GitLab Personal
+Access Tokens (PATs) allowed contributors to inadvertently leak `glpat-` keys
+within prompt examples or code templates.
+
+**Learning:** GitLab PATs have transitioned from standard 20-character legacy
+tokens to modern, routable tokens containing a dot (`.`) and a 9-character
+routing hash. A naive regex can either miss the routable structure or falsely
+match part of an invalid length token. Strict length checks and dot/routing-hash
+distinctions must be explicitly handled via negative lookaheads and structured
+alternations to prevent both false positives and false negatives.
+
+**Prevention:** Define a comprehensive regex pattern for `glpat-` prefixes that
+separates legacy/standard 20-character matches (using negative lookaheads for subsequent characters)
+from modern routable matches (27-300 characters + dot + 9-character hash) and bracketed template placeholders,
+and verify coverage using concatenated test assertions.

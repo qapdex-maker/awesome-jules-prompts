@@ -21,6 +21,7 @@ PATTERNS = {
     "Stripe API Key": re.compile(r"(?:sk_live_|sk_test_|rk_live_|rk_test_)(?:[a-zA-Z0-9_]{24,}|\{[a-zA-Z0-9_\-]+\})"),
     "Groq API Key": re.compile(r"gsk_(?:[a-zA-Z0-9_]{52,}|\{[a-zA-Z0-9_\-]+\})"),
     "Replicate API Token": re.compile(r"r8_(?:[a-zA-Z0-9_]{37,}|\{[a-zA-Z0-9_\-]+\})"),
+    "GitLab Access Token": re.compile(r"glpat-(?:[a-zA-Z0-9_\-]{20}(?![a-zA-Z0-9_\-.])|[a-zA-Z0-9_\-]{27,300}\.[a-zA-Z0-9_\-]{9}|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 def parse_prefix(pattern_str):
