@@ -120,3 +120,10 @@ complex regex patterns.
 **Action:** Replace `content.lower()` and Python string loops with pre-compiled case-insensitive regex searches for fast-path case-insensitive substring checking.
 
 ---
+
+## 2026-07-28 - Consolidating duplicate and overlapping regular expression rules
+
+**Learning:** In highly optimized secret scanners, defining duplicate or overlapping patterns (e.g., separate rules for the same prefix such as `"GitLab Token"` and `"GitLab Access Token"`) introduces redundant regex engine evaluations, extra compilation overhead, and duplicate match-handling. Furthermore, it triggers multiple scanner alerts for the same token line, which breaks unit test assertions designed for single-match validation. Consolidating overlapping rules into a single robust regex solves both performance overhead and test flakiness.
+**Action:** Always scan pattern mappings for overlapping/redundant prefixes or target rules, and consolidate them under a single unified regex entry to ensure clean single-pass matching.
+
+---
