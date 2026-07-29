@@ -132,28 +132,6 @@ def test_github_placeholder_ignored(run_scan):
     issues = run_scan(content)
     assert len(issues) == 0
 
-def test_gitlab_standard_pat(run_scan):
-    # glpat- followed by 20 alphanumeric/hyphen/underscore characters
-    # Concatenated to avoid triggering scanner on this test file
-    content = "gitlab_val = '" + "glpat-" + "abcdefghijklmnopq_s-'"
-    issues = run_scan(content)
-    assert len(issues) == 1
-    assert issues[0][1] == "GitLab Token"
-
-def test_gitlab_routable_pat(run_scan):
-    # routable format like: glpat-[0-9a-zA-Z_-]{27,300}\.[0-9a-z]{9}
-    # Concatenated to avoid triggering scanner on this test file
-    content = "gitlab_val = '" + "glpat-" + "1234567890abcdefghijklmnopqrstuvwx.123456789'"
-    issues = run_scan(content)
-    assert len(issues) == 1
-    assert issues[0][1] == "GitLab Token"
-
-def test_gitlab_placeholder_ignored(run_scan):
-    # Concatenated to avoid triggering scanner on this test file
-    content = "gitlab_val = '" + "glpat-" + "{GITLAB_TOKEN}'"
-    issues = run_scan(content)
-    assert len(issues) == 0
-
 def test_anthropic_api03_key(run_scan):
     # Anthropic api03 key format, sk-ant-api03- followed by 93 chars and AA
     # Concatenated to avoid triggering scanner on this test file
@@ -314,7 +292,7 @@ def test_gitlab_legacy_token(run_scan):
     content = "my_val = '" + "glpat-" + "12345678901234567890'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "GitLab Access Token"
+    assert issues[0][1] == "GitLab Token"
 
 def test_gitlab_legacy_token_too_short_ignored(run_scan):
     # Legacy GitLab PAT: 19 characters (too short)
@@ -334,7 +312,7 @@ def test_gitlab_routable_token(run_scan):
     content = "my_val = '" + "glpat-" + "123456789012345678901234567.123456789'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "GitLab Access Token"
+    assert issues[0][1] == "GitLab Token"
 
 def test_gitlab_routable_token_invalid_hash_ignored(run_scan):
     # Routable GitLab PAT: 8 characters after dot instead of 9

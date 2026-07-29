@@ -139,3 +139,11 @@ alternations to prevent both false positives and false negatives.
 separates legacy/standard 20-character matches (using negative lookaheads for subsequent characters)
 from modern routable matches (27-300 characters + dot + 9-character hash) and bracketed template placeholders,
 and verify coverage using concatenated test assertions.
+
+## 2026-07-28 - [Duplicate Rule Consolidation and Identifier Constraints]
+
+**Vulnerability:** Duplicate / overlapping regular expression patterns in the secret scanner (e.g., matching the same prefix under different names, like "GitLab Token" and "GitLab Access Token") can trigger redundant evaluation and duplicate alerts, causing unit test suites to fail on dual matches.
+
+**Learning:** When merging and scaling distinct scanner features, name changes or identifier variations can inadvertently introduce overlapping rules. If rules overlap, each file scan reports multiple issues for a single leak, causing unexpected side effects in CI pipelines and unit tests.
+
+**Prevention:** Periodically audit active scanning patterns and consolidate duplicates. Upgrade existing rules to adopt the most robust lookahead and character class definitions, ensuring that only a single clear rule matches each credential prefix and that unit tests are correctly aligned.
