@@ -127,3 +127,8 @@ complex regex patterns.
 **Action:** Always scan pattern mappings for overlapping/redundant prefixes or target rules, and consolidate them under a single unified regex entry to ensure clean single-pass matching.
 
 ---
+
+## 2026-07-29 - In-place directory pruning optimization for repository traversals
+
+**Learning:** Running `os.walk` scans over repository trees containing numerous files in hidden administrative or non-source directories (such as agent journal folders `.jules/`, `.Jules/`, or CI pipeline folders `.github/`) incurs noticeable disk traversal and file-system metadata check overhead. In-place pruning of `dirs` within the walk loop (e.g., `dirs[:] = [d for d in dirs if d not in ignored_dirs]`) completely halts exploration down those directory branches, preventing unnecessary files from ever being processed.
+**Action:** Explicitly define and prune all hidden and non-source administrative or journal folders (`.jules`, `.Jules`, `.github`) from directory traversal lists within `os.walk` to maximize repository-wide scanning speeds.
