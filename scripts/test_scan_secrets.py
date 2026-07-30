@@ -314,7 +314,7 @@ def test_gitlab_legacy_token(run_scan):
     content = "my_val = '" + "glpat-" + "12345678901234567890'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "GitLab Access Token"
+    assert issues[0][1] == "GitLab Token"
 
 def test_gitlab_legacy_token_too_short_ignored(run_scan):
     # Legacy GitLab PAT: 19 characters (too short)
@@ -334,7 +334,7 @@ def test_gitlab_routable_token(run_scan):
     content = "my_val = '" + "glpat-" + "123456789012345678901234567.123456789'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "GitLab Access Token"
+    assert issues[0][1] == "GitLab Token"
 
 def test_gitlab_routable_token_invalid_hash_ignored(run_scan):
     # Routable GitLab PAT: 8 characters after dot instead of 9
