@@ -15,7 +15,7 @@ PATTERNS = {
     "AWS Access Key": re.compile(r"(?:AKIA|ASIA)(?:[0-9A-Z]{16}|\{[a-zA-Z0-9_\-]+\})"),
     "Google API Key": re.compile(r"(?:AIzaSy|AQ\.)(?:[a-zA-Z0-9_\-]{33,60}|\{[a-zA-Z0-9_\-]+\})"),
     "GitHub Token": re.compile(r"(?:gh[pousr]_|github_pat_)(?:[a-zA-Z0-9_]{36,}|\{[a-zA-Z0-9_\-]+\})"),
-    "GitLab Token": re.compile(r"glpat-(?:[a-zA-Z0-9_\-]{20}(?![a-zA-Z0-9_\-.])|[a-zA-Z0-9_\-]{27,300}\.[a-zA-Z0-9_\-]{9}|\{[a-zA-Z0-9_\-]+\})"),
+    "GitLab Token": re.compile(r"glpat-(?:[a-zA-Z0-9_\-]{20}(?![a-zA-Z0-9_\-.])|[a-zA-Z0-9_\-]{27,300}\.[a-zA-Z0-9_\-]{9}(?![a-zA-Z0-9_\-])|\{[a-zA-Z0-9_\-]+\})"),
     "Anthropic API Key": re.compile(r"sk-ant-(?:[a-zA-Z0-9_\-]{40,}|\{[a-zA-Z0-9_\-]+\})"),
     "Hugging Face Token": re.compile(r"hf_(?:[a-zA-Z0-9]{34,40}|\{[a-zA-Z0-9_\-]+\})"),
     "Slack Token": re.compile(r"(?:xoxb-|xoxp-|xoxr-|xoxs-|xapp-)(?:[a-zA-Z0-9_\-]{20,}|\{[a-zA-Z0-9_\-]+\})"),
