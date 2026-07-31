@@ -325,3 +325,14 @@ def test_gitlab_placeholder_ignored(run_scan):
     content = "my_val = '" + "glpat-" + "{GITLAB_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+def test_secret_redaction_in_output(run_scan):
+    # Test that the matched secret itself is redacted in the returned line text
+    secret_part = "sk-" + "proj-abc123abc123abc123abc123abc123abc123abc123"
+    content = f"openai_key = '{secret_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "OpenAI API Key"
+    # The actual matched key should not be in the output, replaced by [REDACTED]
+    assert secret_part not in issues[0][2]
+    assert "openai_key = '[REDACTED]'" in issues[0][2]

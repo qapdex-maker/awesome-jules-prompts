@@ -247,12 +247,14 @@ def scan_file(filepath):
                     continue
                 reported_issues.add((line_no, label))
 
-                # Dynamically extract only the matching line content
+                # Dynamically extract and redact the matching line content to prevent leakage in logs
                 line_start = content.rfind('\n', 0, start_pos) + 1
                 line_end = content.find('\n', match.end())
                 if line_end == -1:
                     line_end = len(content)
-                line = content[line_start:line_end]
+                line_prefix = content[line_start:start_pos]
+                line_suffix = content[match.end():line_end]
+                line = line_prefix + "[REDACTED]" + line_suffix
                 found_issues.append((line_no, label, line.strip()))
 
         # Maintain consistent sorted output by line number
