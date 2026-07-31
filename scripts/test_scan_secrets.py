@@ -3,23 +3,27 @@ import tempfile
 import pytest
 from scripts.scan_secrets import scan_file, PATTERNS
 
+
 def create_temp_file(content):
     fd, path = tempfile.mkstemp(suffix=".txt")
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(content)
         return path
     except Exception:
         os.close(fd)
         raise
 
+
 @pytest.fixture
 def run_scan():
     temp_files = []
+
     def _scan(content):
         path = create_temp_file(content)
         temp_files.append(path)
         return scan_file(path)
+
     yield _scan
     for path in temp_files:
         try:
@@ -27,10 +31,12 @@ def run_scan():
         except OSError:
             pass
 
+
 def test_clean_file(run_scan):
     content = "This is a clean file without any secrets."
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_traditional_openai_key(run_scan):
     # 32 characters after sk- (alphanumeric only)
@@ -40,13 +46,17 @@ def test_traditional_openai_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "OpenAI API Key"
 
+
 def test_modern_openai_key_with_hyphens(run_scan):
     # Modern sk-proj- key format with hyphens
     # Concatenated to avoid triggering scanner on this test file
-    content = "openai_key = '" + "sk-" + "proj-abc123abc123abc123abc123abc123abc123abc123'"
+    content = (
+        "openai_key = '" + "sk-" + "proj-abc123abc123abc123abc123abc123abc123abc123'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "OpenAI API Key"
+
 
 def test_aws_access_key(run_scan):
     # Concatenated to avoid triggering scanner on this test file
@@ -55,12 +65,14 @@ def test_aws_access_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "AWS Access Key"
 
+
 def test_google_api_key(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "google_key = '" + "AIzaSy" + "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P67'"
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Google API Key"
+
 
 def test_google_aq_api_key(run_scan):
     # Concatenated to avoid triggering scanner on this test file
@@ -69,17 +81,20 @@ def test_google_aq_api_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Google API Key"
 
+
 def test_google_aq_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "my_val = '" + "AQ." + "{GOOGLE_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "openai_key = '" + "sk-" + "{OPENAI_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_deepseek_api_key(run_scan):
     # DeepSeek API keys are 32 hex chars after sk-
@@ -89,19 +104,28 @@ def test_deepseek_api_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "DeepSeek API Key"
 
+
 def test_deepseek_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "my_key = '" + "sk-" + "{DEEPSEEK_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_multi_match_line_detects_real_secret(run_scan):
     # A placeholder followed by a real key on the same line
     # Concatenated to avoid triggering scanner on this test file
-    content = "placeholder = '" + "sk-" + "{API_KEY}' and real = '" + "sk-" + "proj-abc123abc123abc123abc123abc123abc123abc123'"
+    content = (
+        "placeholder = '"
+        + "sk-"
+        + "{API_KEY}' and real = '"
+        + "sk-"
+        + "proj-abc123abc123abc123abc123abc123abc123abc123'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "OpenAI API Key"
+
 
 def test_generic_token(run_scan):
     # Concatenated to avoid triggering scanner on this test file
@@ -109,6 +133,7 @@ def test_generic_token(run_scan):
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Generic Token"
+
 
 def test_github_classic_token(run_scan):
     # ghp_ format, length of 40 total
@@ -118,13 +143,19 @@ def test_github_classic_token(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "GitHub Token"
 
+
 def test_github_fine_grained_token(run_scan):
     # github_pat_ format
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "github_pat_" + "1234567890abcdefghijkl_1234567890abcdefghijklmnopqrstuvwx_1234567890'"
+    content = (
+        "val = '"
+        + "github_pat_"
+        + "1234567890abcdefghijkl_1234567890abcdefghijklmnopqrstuvwx_1234567890'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "GitHub Token"
+
 
 def test_github_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
@@ -132,27 +163,39 @@ def test_github_placeholder_ignored(run_scan):
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_anthropic_api03_key(run_scan):
     # Anthropic api03 key format, sk-ant-api03- followed by 93 chars and AA
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "sk-ant-" + "api03-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrsAA'"
+    content = (
+        "val = '"
+        + "sk-ant-"
+        + "api03-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrsAA'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Anthropic API Key"
 
+
 def test_anthropic_admin01_key(run_scan):
     # Anthropic admin01 key format, sk-ant-admin01- followed by 93 chars and AA
     # Concatenated to avoid triggering scanner on this test file
-    content = "val = '" + "sk-ant-" + "admin01-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrsAA'"
+    content = (
+        "val = '"
+        + "sk-ant-"
+        + "admin01-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrsAA'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Anthropic API Key"
+
 
 def test_anthropic_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "val = '" + "sk-ant-" + "{ANTHROPIC_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_huggingface_token_34_chars(run_scan):
     # hf_ format with 34 characters (34 chars after hf_)
@@ -162,6 +205,7 @@ def test_huggingface_token_34_chars(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Hugging Face Token"
 
+
 def test_huggingface_token_37_chars(run_scan):
     # hf_ format with 37 characters (37 chars after hf_)
     # Concatenated to avoid triggering scanner on this test file
@@ -169,6 +213,7 @@ def test_huggingface_token_37_chars(run_scan):
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Hugging Face Token"
+
 
 def test_huggingface_token_40_chars(run_scan):
     # hf_ format with 40 characters (40 chars after hf_)
@@ -178,6 +223,7 @@ def test_huggingface_token_40_chars(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Hugging Face Token"
 
+
 def test_huggingface_too_short_ignored(run_scan):
     # hf_ followed by 33 characters (below minimum 34) should be ignored
     # Concatenated to avoid triggering scanner on this test file
@@ -185,31 +231,42 @@ def test_huggingface_too_short_ignored(run_scan):
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_huggingface_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "val = '" + "hf_" + "{HF_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_slack_token_xoxb(run_scan):
     # Concatenated to avoid triggering scanner on this test file
-    content = "slack_val = '" + "xoxb-" + "123456789012-345678901234-567890123456789012345678'"
+    content = (
+        "slack_val = '"
+        + "xoxb-"
+        + "123456789012-345678901234-567890123456789012345678'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Slack Token"
 
+
 def test_slack_token_xoxp(run_scan):
     # Concatenated to avoid triggering scanner on this test file
-    content = "slack_val = '" + "xoxp-" + "1234567890-12345678901-2345678901-2345678901'"
+    content = (
+        "slack_val = '" + "xoxp-" + "1234567890-12345678901-2345678901-2345678901'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Slack Token"
+
 
 def test_slack_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "slack_val = '" + "xoxb-" + "{SLACK_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_stripe_test_key(run_scan):
     # Concatenated to avoid triggering scanner on this test file
@@ -218,6 +275,7 @@ def test_stripe_test_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Stripe API Key"
 
+
 def test_stripe_live_key(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "stripe_val = '" + "sk_live_" + "51AzSyA1B2C3D4E5F6G7H8I9J0K1L2M'"
@@ -225,24 +283,32 @@ def test_stripe_live_key(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Stripe API Key"
 
+
 def test_stripe_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "stripe_val = '" + "sk_live_" + "{STRIPE_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_groq_api_key(run_scan):
     # Concatenated to avoid triggering scanner on this test file
-    content = "groq_val = '" + "gsk_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'"
+    content = (
+        "groq_val = '"
+        + "gsk_"
+        + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'"
+    )
     issues = run_scan(content)
     assert len(issues) == 1
     assert issues[0][1] == "Groq API Key"
+
 
 def test_groq_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "groq_val = '" + "gsk_" + "{GROQ_API_KEY}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_replicate_api_token(run_scan):
     # Concatenated to avoid triggering scanner on this test file
@@ -251,11 +317,13 @@ def test_replicate_api_token(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "Replicate API Token"
 
+
 def test_replicate_placeholder_ignored(run_scan):
     # Concatenated to avoid triggering scanner on this test file
     content = "replicate_val = '" + "r8_" + "{REPLICATE_API_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_ignored_extension_skipped(tmp_path):
     # Create an image file with a secret-like content
@@ -265,6 +333,7 @@ def test_ignored_extension_skipped(tmp_path):
     issues = scan_file(str(filepath))
     assert len(issues) == 0
 
+
 def test_ignored_filename_skipped(tmp_path):
     # Create a lock file with a secret-like content
     filepath = tmp_path / "package-lock.json"
@@ -273,11 +342,13 @@ def test_ignored_filename_skipped(tmp_path):
     issues = scan_file(str(filepath))
     assert len(issues) == 0
 
+
 def test_empty_file_skipped(tmp_path):
     filepath = tmp_path / "empty.txt"
     filepath.write_text("")
     issues = scan_file(str(filepath))
     assert len(issues) == 0
+
 
 def test_binary_file_skipped(tmp_path):
     # Create a file containing a null byte
@@ -285,6 +356,7 @@ def test_binary_file_skipped(tmp_path):
     filepath.write_bytes(b"hello\x00world")
     issues = scan_file(str(filepath))
     assert len(issues) == 0
+
 
 def test_gitlab_legacy_token(run_scan):
     # Legacy GitLab PAT: glpat- followed by exactly 20 characters
@@ -294,17 +366,20 @@ def test_gitlab_legacy_token(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "GitLab Token"
 
+
 def test_gitlab_legacy_token_too_short_ignored(run_scan):
     # Legacy GitLab PAT: 19 characters (too short)
     content = "my_val = '" + "glpat-" + "1234567890123456789'"
     issues = run_scan(content)
     assert len(issues) == 0
 
+
 def test_gitlab_legacy_token_too_long_ignored(run_scan):
     # Legacy GitLab PAT: 21 characters (too long, not routable)
     content = "my_val = '" + "glpat-" + "123456789012345678901'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_gitlab_routable_token(run_scan):
     # Routable GitLab PAT: glpat- followed by 27-300 characters, a dot, and 9 characters
@@ -314,11 +389,13 @@ def test_gitlab_routable_token(run_scan):
     assert len(issues) == 1
     assert issues[0][1] == "GitLab Token"
 
+
 def test_gitlab_routable_token_invalid_hash_ignored(run_scan):
     # Routable GitLab PAT: 8 characters after dot instead of 9
     content = "my_val = '" + "glpat-" + "123456789012345678901234567.12345678'"
     issues = run_scan(content)
     assert len(issues) == 0
+
 
 def test_gitlab_placeholder_ignored(run_scan):
     # Placeholder format: glpat-{GITLAB_TOKEN}
