@@ -345,7 +345,9 @@ def scan_file(filepath):
                 line_end = content.find("\n", match.end())
                 if line_end == -1:
                     line_end = len(content)
-                line = content[line_start:line_end]
+                line_prefix = content[line_start:start_pos]
+                line_suffix = content[match.end():line_end]
+                line = line_prefix + "[REDACTED]" + line_suffix
                 found_issues.append((line_no, label, line.strip()))
 
         # Maintain consistent sorted output by line number

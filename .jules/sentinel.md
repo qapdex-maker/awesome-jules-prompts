@@ -147,3 +147,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** When merging and scaling distinct scanner features, name changes or identifier variations can inadvertently introduce overlapping rules. If rules overlap, each file scan reports multiple issues for a single leak, causing unexpected side effects in CI pipelines and unit tests.
 
 **Prevention:** Periodically audit active scanning patterns and consolidate duplicates. Upgrade existing rules to adopt the most robust lookahead and character class definitions, ensuring that only a single clear rule matches each credential prefix and that unit tests are correctly aligned.
+
+## 2026-07-30 - [Secret Leakage in Build and CI Logs]
+
+**Vulnerability:** Even though the secret scanner successfully catches committed secrets, printing the original line content containing the raw secret to standard output exposes the secret in cleartext within CI/CD runner build logs and terminal outputs.
+
+**Learning:** Finding a secret is only half the battle. If a scanner alerts on a secret and prints the offending line containing that raw credential to stdout/logs, the secret becomes permanently exposed in the repository's CI history and logs, defeating the purpose of prevention.
+
+**Prevention:** Redact the specific matched secret substring from the reported line content by replacing it with `[REDACTED]` prior to returning the issue or printing it to console outputs.
