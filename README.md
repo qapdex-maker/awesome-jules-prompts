@@ -13,7 +13,7 @@
 </p>
 
 <div align="center">
-  <h1>Awesome Jules Prompts 🌟</h1>
+  <h1>Awesome Jules Prompts <span aria-hidden="true">🌟</span></h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
   <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a><span aria-hidden="true"> • </span>
@@ -28,7 +28,7 @@
 
 <a id="table-of-contents"></a>
 
-## Table of Contents 📖
+## Table of Contents <span aria-hidden="true">📖</span>
 
 - <a href="#everyday-dev-tasks" aria-label="Everyday Dev Tasks">Everyday Dev Tasks 🛠️</a>
 - <a href="#debugging" aria-label="Debugging">Debugging 🐞</a>
@@ -46,7 +46,7 @@
 
 <a id="everyday-dev-tasks"></a>
 
-## Everyday Dev Tasks 🛠️
+## Everyday Dev Tasks <span aria-hidden="true">🛠️</span>
 
 - `// Refactor {a specific} file from {x} to {y}...`
   <sub>General-purpose, applies to any language or repo.</sub>
@@ -75,7 +75,7 @@
 
 <a id="debugging"></a>
 
-## Debugging 🐞
+## Debugging <span aria-hidden="true">🐞</span>
 
 - `// Help me fix {a specific} error...`
   <sub>For any repo where you're stuck on a runtime or build error.</sub>
@@ -104,7 +104,7 @@
 
 <a id="documentation"></a>
 
-## Documentation 📝
+## Documentation <span aria-hidden="true">📝</span>
 
 - `// Write a README for this project`
   <sub>Any repo lacking a basic project overview.</sub>
@@ -124,7 +124,7 @@
 
 <a id="testing"></a>
 
-## Testing 🧪
+## Testing <span aria-hidden="true">🧪</span>
 
 - `// Add integration tests for this API endpoint`
   <sub>Express, FastAPI, Django, Flask apps.</sub>
@@ -153,10 +153,10 @@
 
 <a id="security"></a>
 
-## Security 🛡️
+## Security <span aria-hidden="true">🛡️</span>
 
 > [!IMPORTANT]
-> To report a vulnerability in this repository, please refer to our [Security Policy](SECURITY.md).
+> To report a vulnerability in this repository, please refer to our <a href="SECURITY.md" aria-label="Read our Security Policy">Security Policy</a>.
 
 - `// Scan this file for hardcoded secrets or API keys...`
   <sub>Critical for preventing accidental credential leaks.</sub>
@@ -191,7 +191,7 @@
 
 <a id="package-management"></a>
 
-## Package Management 📦
+## Package Management <span aria-hidden="true">📦</span>
 
 - `// Upgrade my linter and autofix breaking config changes`
   <sub>JS/TS repos using ESLint or Prettier.</sub>
@@ -214,7 +214,7 @@
 
 <a id="ai-native-tasks"></a>
 
-## AI-Native Tasks 🤖
+## AI-Native Tasks <span aria-hidden="true">🤖</span>
 
 - `// Analyze this repo and generate 3 feature ideas`
   <sub>Vision-stage or greenfield products.</sub>
@@ -243,7 +243,7 @@
 
 <a id="context"></a>
 
-## Context 🏗️
+## Context <span aria-hidden="true">🏗️</span>
 
 - `// Write a status update based on recent commits`
   <sub>Managerial and async communication.</sub>
@@ -257,7 +257,7 @@
 
 <a id="fun--experimental"></a>
 
-## Fun & Experimental ✨
+## Fun & Experimental <span aria-hidden="true">✨</span>
 
 - `// Add a confetti animation when {a specific} action succeeds`
   <sub>Frontend web apps with user delight moments.</sub>
@@ -280,7 +280,7 @@
 
 <a id="start-from-scratch"></a>
 
-## Start from Scratch 🌱
+## Start from Scratch <span aria-hidden="true">🌱</span>
 
 - `// What's going on in this repo?`
   <sub>Great for legacy repos or onboarding onto unfamiliar code.</sub>
@@ -306,7 +306,7 @@
 
 <a id="contributing"></a>
 
-## Contributing 🤝
+## Contributing <span aria-hidden="true">🤝</span>
 
 > [!TIP]
 > New here? Check out our <a href="contributing.md" aria-label="Read our Contributing Guide">Contributing Guide</a> to learn how to

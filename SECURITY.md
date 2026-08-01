@@ -2,7 +2,7 @@
 
 ---
 
-# Security Policy 🛡️
+# Security Policy <span aria-hidden="true">🛡️</span>
 
 ## Reporting a Vulnerability
 

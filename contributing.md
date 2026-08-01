@@ -2,7 +2,7 @@
 
 ---
 
-# Contributing 🤝
+# Contributing <span aria-hidden="true">🤝</span>
 
 Thank you for considering contributing to **Awesome Jules Prompts**!
 
