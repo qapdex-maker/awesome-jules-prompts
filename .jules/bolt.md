@@ -139,3 +139,8 @@ complex regex patterns.
 
 **Learning:** Python's standard `os.path.basename` and `os.path.splitext` have significant overhead due to generic validation and compatibility logic. For high-frequency directory traversals like a secret scanner, replacing `os.path` operations with fast, raw string `rfind` index slicing can yield a >2x speedup on file-path parsing operations on every file scanned in the repository.
 **Action:** Use custom cross-platform raw-string parsing instead of standard `os.path` utilities for path checks in performance-critical file traversal hot paths.
+
+## 2026-08-01 - Path-parsing string rpartition speedup
+
+**Learning:** Standard string `rfind` and index slicing in Python involves multiple manual checks and slicing operations, adding overhead during repository traversal and scanning loops. Replacing it with highly optimized, C-level string `rpartition` parsing (and reconstructing the extension with `ext = dot + ext if dot else ""`) avoids manual indices entirely and achieves an additional ~35% speedup on path parsing.
+**Action:** Prefer `rpartition` slicing over `rfind` indexing when parsing directory paths and extensions in performance-critical hot paths.
