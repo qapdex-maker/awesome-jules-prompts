@@ -403,6 +403,36 @@ def test_gitlab_placeholder_ignored(run_scan):
     issues = run_scan(content)
     assert len(issues) == 0
 
+
+def test_npm_token(run_scan):
+    # Valid npm registry token format: npm_ followed by 36 alphanumeric characters
+    content = "val = '" + "npm_" + "1234567890abcdefghijklmnopqrstuvwxyz'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "NPM Token"
+
+
+def test_npm_token_too_short_ignored(run_scan):
+    # 35 characters after npm_ (too short)
+    content = "val = '" + "npm_" + "1234567890abcdefghijklmnopqrstuvwxy'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_npm_token_too_long_ignored(run_scan):
+    # 37 characters after npm_ (too long)
+    content = "val = '" + "npm_" + "1234567890abcdefghijklmnopqrstuvwxyza'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_npm_placeholder_ignored(run_scan):
+    # Placeholder format: npm_{NPM_TOKEN}
+    content = "val = '" + "npm_" + "{NPM_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
 def test_secret_redaction_in_output(run_scan):
     # Test that the matched secret itself is redacted in the returned line text
     secret_part = "sk-" + "proj-abc123abc123abc123abc123abc123abc123abc123"

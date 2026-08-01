@@ -40,6 +40,7 @@ PATTERNS = {
     ),
     "Groq API Key": re.compile(r"gsk_(?:[a-zA-Z0-9_]{52,}|\{[a-zA-Z0-9_\-]+\})"),
     "Replicate API Token": re.compile(r"r8_(?:[a-zA-Z0-9_]{37,}|\{[a-zA-Z0-9_\-]+\})"),
+    "NPM Token": re.compile(r"npm_(?:[a-zA-Z0-9]{36}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"),
 }
 
 

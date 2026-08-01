@@ -155,3 +155,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** Finding a secret is only half the battle. If a scanner alerts on a secret and prints the offending line containing that raw credential to stdout/logs, the secret becomes permanently exposed in the repository's CI history and logs, defeating the purpose of prevention.
 
 **Prevention:** Redact the specific matched secret substring from the reported line content by replacing it with `[REDACTED]` prior to returning the issue or printing it to console outputs.
+
+## 2026-08-01 - [NPM Registry Token Leakage Prevention]
+
+**Vulnerability:** Lack of secret scanner pattern coverage for NPM registry access tokens (using the modern `npm_` prefix format) could lead to contributors accidentally committing live npm tokens when sharing examples or code configurations.
+
+**Learning:** Platforms like npm have moved to high-entropy, structured token formats with explicit prefixes (e.g. `npm_` followed by 36 alphanumeric characters). Standard generic scanners might miss these if they aren't configured with prefix-specific lookaheads to enforce length bounds precisely.
+
+**Prevention:** Define a dedicated `NPM Token` scanning pattern that precisely matches `npm_` followed by exactly 36 alphanumeric characters, handles negative lookaheads to avoid partial/invalid matches, exempts bracketed placeholders, and includes robust test assertions.
