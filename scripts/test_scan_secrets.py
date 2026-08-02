@@ -443,3 +443,45 @@ def test_secret_redaction_in_output(run_scan):
     # The actual matched key should not be in the output, replaced by [REDACTED]
     assert secret_part not in issues[0][2]
     assert "openai_key = '[REDACTED]'" in issues[0][2]
+
+
+def test_sentry_user_token(run_scan):
+    # Sentry User Token: sntryu_ followed by exactly 64 hex characters
+    sentry_part = "sntryu_" + "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    content = f"sentry_val = '{sentry_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Sentry Token"
+    assert sentry_part not in issues[0][2]
+
+
+def test_sentry_user_token_invalid_ignored(run_scan):
+    # Sentry User Token: invalid length (too short)
+    sentry_part = "sntryu_" + "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcde"
+    content = f"sentry_val = '{sentry_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_sentry_org_token(run_scan):
+    # Sentry Org Token: sntrys_ followed by 40 or more base64/URL chars
+    sentry_part = "sntrys_" + "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_+-/"
+    content = f"sentry_val = '{sentry_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Sentry Token"
+    assert sentry_part not in issues[0][2]
+
+
+def test_sentry_org_token_invalid_ignored(run_scan):
+    # Sentry Org Token: too short (39 chars after sntrys_)
+    sentry_part = "sntrys_" + "1234567890abcdefghijklmnopqrstuvwxyzABC"
+    content = f"sentry_val = '{sentry_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_sentry_placeholder_ignored(run_scan):
+    content = "sentry_val = '" + "sntry" + "{SENTRY_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
