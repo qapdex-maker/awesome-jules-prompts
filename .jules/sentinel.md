@@ -163,3 +163,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** Platforms like npm have moved to high-entropy, structured token formats with explicit prefixes (e.g. `npm_` followed by 36 alphanumeric characters). Standard generic scanners might miss these if they aren't configured with prefix-specific lookaheads to enforce length bounds precisely.
 
 **Prevention:** Define a dedicated `NPM Token` scanning pattern that precisely matches `npm_` followed by exactly 36 alphanumeric characters, handles negative lookaheads to avoid partial/invalid matches, exempts bracketed placeholders, and includes robust test assertions.
+
+## 2026-08-02 - [Sentry Authentication Token Leakage Prevention]
+
+**Vulnerability:** Lack of secret scanner pattern coverage for Sentry User and Organization Auth Tokens could lead to contributors accidentally committing live Sentry credentials when sharing configuration examples or setting up continuous integration configurations.
+
+**Learning:** Modern Sentry User Auth Tokens start with `sntryu_` followed by exactly 64 hexadecimal characters, while Organization Auth Tokens start with `sntrys_` followed by variable-length base64-encoded/URL-safe payloads (at least 40+ characters). Standard generic scanners or old token definitions miss these structured formats because they lack specific prefix lookaheads and length constraint assertions.
+
+**Prevention:** Define a dedicated `Sentry Token` scanning rule that recognizes both `sntryu_` (with exact 64 hexadecimal character constraints) and `sntrys_` (with 40+ base64/URL-safe character constraints) prefixes, exempts standard template placeholders, and includes comprehensive test verification cases.
