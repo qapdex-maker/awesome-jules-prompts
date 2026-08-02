@@ -277,17 +277,19 @@ def scan_file(filepath):
         return found_issues
 
     try:
-        # ⚡ Bolt: Check file size before opening or processing.
-        # Skip 0-byte (empty) files and files larger than 5MB to prevent memory crashes on huge database/log dumps.
-        file_size = os.path.getsize(filepath)
-        if file_size == 0 or file_size > 5 * 1024 * 1024:
+        # ⚡ Bolt: Read at most 5MB + 1 byte directly from the file to check file size and contents simultaneously.
+        # This completely eliminates the need for an expensive os.path.getsize() stat system call on every single file,
+        # reducing filesystem I/O and overhead while fully maintaining protection against huge files and zero-byte files.
+        # Furthermore, in-memory decoding is ~17% faster than using standard Python text-mode file readers.
+        limit = 5 * 1024 * 1024
+        with open(filepath, "rb") as f:
+            raw_content = f.read(limit + 1)
+
+        # Skip 0-byte (empty) files and files larger than 5MB
+        if not raw_content or len(raw_content) > limit:
             return found_issues
 
-        # ⚡ Bolt: Read file in binary mode first to check for null bytes.
-        # This acts as a robust, 100% correct pre-filter for arbitrary binary files (e.g. executables).
-        # Furthermore, in-memory decoding is ~17% faster than using standard Python text-mode file readers.
-        with open(filepath, "rb") as f:
-            raw_content = f.read()
+        # ⚡ Bolt: Check for null bytes to filter out binary files (e.g. executables).
         if b"\x00" in raw_content:
             return found_issues
         content = raw_content.decode("utf-8", errors="ignore")
