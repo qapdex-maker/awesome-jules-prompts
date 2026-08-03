@@ -44,6 +44,9 @@ PATTERNS = {
     "Sentry Token": re.compile(
         r"sntry(?:u_[a-fA-F0-9]{64}(?![a-fA-F0-9])|s_[a-zA-Z0-9_+\/-]{40,}(?![a-zA-Z0-9_+\/-])|\{[a-zA-Z0-9_\-]+\})"
     ),
+    "PyPI Token": re.compile(
+        r"pypi-(?:[a-zA-Z0-9_\-]{85,}(?![a-zA-Z0-9_\-])|\{[a-zA-Z0-9_\-]+\})"
+    ),
 }
 
 
