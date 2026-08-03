@@ -485,3 +485,27 @@ def test_sentry_placeholder_ignored(run_scan):
     content = "sentry_val = '" + "sntry" + "{SENTRY_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+
+def test_pypi_token(run_scan):
+    # Valid PyPI Token: pypi- followed by at least 85 base64 characters
+    pypi_part = "pypi-" + "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-1234567890abcdefghijklmnopq"
+    content = f"pypi_val = '{pypi_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "PyPI Token"
+    assert pypi_part not in issues[0][2]
+
+
+def test_pypi_token_too_short_ignored(run_scan):
+    # Too short PyPI Token (84 characters after pypi-)
+    pypi_part = "pypi-" + "1234567890" * 8 + "1234"
+    content = f"pypi_val = '{pypi_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_pypi_placeholder_ignored(run_scan):
+    content = "pypi_val = '" + "pypi-" + "{PYPI_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
