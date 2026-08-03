@@ -77,3 +77,8 @@ links to maintain fluent cross-document navigation.
 
 **Learning:** When decorative emojis are included in major section headings, screen readers read out their verbal descriptors (e.g., "lady beetle" or "hammer and wrench") on every section announcement, resulting in highly repetitive auditory noise. Wrapping these heading emojis in `<span aria-hidden="true">` silences them for screen readers while preserving the visual design. When paired with explicit, stable HTML anchors above each heading, this has zero impact on Table of Contents slugging or anchor links.
 **Action:** Wrap decorative emojis at the end of headings in static documentation inside `<span aria-hidden="true">` to improve heading navigation flow on screen readers.
+
+## 2026-08-03 - [Hiding Decorative Emojis inside Anchor Links]
+
+**Learning:** When decorative emojis are included inside anchor link text (such as in header menus or Table of Contents links), screen readers will verbally read the emoji descriptors alongside the link labels. For instance, "Everyday Dev Tasks hammer and wrench, link". Wrapping these decorative emojis in `<span aria-hidden="true">` inside the link labels improves auditory focus and ensures screen readers only announce the clean semantic text of the link.
+**Action:** Always wrap decorative emojis inside HTML anchor tags with `<span aria-hidden="true">` to ensure a clean, uncluttered auditory navigation experience.
