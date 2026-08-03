@@ -388,6 +388,17 @@ def main():
                 for line_no, label, line in issues:
                     print(f"  Line {line_no}: {label} - {line[:60]}...")
     if failed:
+        print("\n" + "=" * 60)
+        print("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:")
+        print("=" * 60)
+        print("1. Documentation/Examples: Use placeholder format with curly braces.")
+        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
+        print("   • Placeholders are completely safe and ignored by the scanner.")
+        print("\n2. Code/Configuration: Store credentials in environment variables.")
+        print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
+        print("\n3. Verify your fixes by running the scanner locally:")
+        print("   • Run: python3 scripts/scan_secrets.py")
+        print("=" * 60 + "\n")
         sys.exit(1)
     print("✅ No potential secrets detected.")
 
