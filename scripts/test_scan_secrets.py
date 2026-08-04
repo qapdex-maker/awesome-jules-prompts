@@ -547,3 +547,9 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_supports_color_returns_boolean():
+    from scripts.scan_secrets import supports_color
+    res = supports_color()
+    assert isinstance(res, bool)
