@@ -3,6 +3,38 @@ import os
 import re
 import sys
 
+
+def supports_color():
+    """
+    Returns True if the running system's stdout supports color, False otherwise.
+    """
+    if "NO_COLOR" in os.environ:
+        return False
+    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+        return False
+    if os.environ.get("TERM") == "dumb":
+        return False
+    return True
+
+
+if supports_color():
+    COLOR_RED = "\033[1;31m"
+    COLOR_GREEN = "\033[1;32m"
+    COLOR_YELLOW = "\033[1;33m"
+    COLOR_CYAN = "\033[1;36m"
+    COLOR_BOLD = "\033[1m"
+    COLOR_DIM = "\033[2m"
+    COLOR_RESET = "\033[0m"
+else:
+    COLOR_RED = ""
+    COLOR_GREEN = ""
+    COLOR_YELLOW = ""
+    COLOR_CYAN = ""
+    COLOR_BOLD = ""
+    COLOR_DIM = ""
+    COLOR_RESET = ""
+
+
 # ⚡ Bolt: Pre-compile regex patterns for better performance
 # Optimization: Converting 'Generic Token' regex from using the slow global case-insensitive (?i) flag
 # to explicit character classes for the keywords (e.g. [sS][eE][cC][rR][eE][tT]) yields a ~34% speedup
@@ -390,23 +422,26 @@ def main():
             issues = scan_file(filepath)
             if issues:
                 failed = True
-                print(f"⚠️ Potential Secret Leak in {filepath}:")
+                print(f"{COLOR_YELLOW}⚠️  Potential Secret Leak in {COLOR_RED}{filepath}{COLOR_YELLOW}:{COLOR_RESET}")
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {label} - {line[:60]}...")
+                    truncated_line = line[:60]
+                    if "[REDACTED]" in truncated_line:
+                        truncated_line = truncated_line.replace("[REDACTED]", f"{COLOR_RED}[REDACTED]{COLOR_RESET}")
+                    print(f"  Line {COLOR_CYAN}{line_no}{COLOR_RESET}: {COLOR_BOLD}{label}{COLOR_RESET} - {truncated_line}...")
     if failed:
-        print("\n" + "=" * 60)
-        print("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:")
-        print("=" * 60)
-        print("1. Documentation/Examples: Use placeholder format with curly braces.")
-        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
+        print("\n" + COLOR_RED + "=" * 60 + COLOR_RESET)
+        print(f"{COLOR_YELLOW}💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:{COLOR_RESET}")
+        print(COLOR_RED + "=" * 60 + COLOR_RESET)
+        print(f"{COLOR_BOLD}1. Documentation/Examples:{COLOR_RESET} Use placeholder format with curly braces.")
+        print(f"   • Change {COLOR_DIM}'sk-proj-abc...'{COLOR_RESET} to {COLOR_GREEN}'sk-{{OPENAI_API_KEY}}'{COLOR_RESET}")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print("\n2. Code/Configuration: Store credentials in environment variables.")
-        print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print("\n3. Verify your fixes by running the scanner locally:")
-        print("   • Run: python3 scripts/scan_secrets.py")
-        print("=" * 60 + "\n")
+        print(f"\n{COLOR_BOLD}2. Code/Configuration:{COLOR_RESET} Store credentials in environment variables.")
+        print(f"   • Use {COLOR_CYAN}os.environ.get('API_KEY'){COLOR_RESET} instead of hardcoding keys.")
+        print(f"\n{COLOR_BOLD}3. Verify your fixes by running the scanner locally:{COLOR_RESET}")
+        print(f"   • Run: {COLOR_CYAN}python3 scripts/scan_secrets.py{COLOR_RESET}")
+        print(COLOR_RED + "=" * 60 + COLOR_RESET + "\n")
         sys.exit(1)
-    print("✅ No potential secrets detected.")
+    print(f"{COLOR_GREEN}✅ No potential secrets detected.{COLOR_RESET}")
 
 
 if __name__ == "__main__":
