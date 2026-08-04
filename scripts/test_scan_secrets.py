@@ -509,3 +509,41 @@ def test_pypi_placeholder_ignored(run_scan):
     content = "pypi_val = '" + "pypi-" + "{PYPI_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
+
+
+def test_discord_token(run_scan):
+    # Valid Discord Bot Token: 24 base64, dot, 6 base64, dot, 38 base64
+    discord_part = "OTY4NTU2MzQ4MzkwMzkxODU5" + "." + "G49NjP" + "." + "pD8PLpKp-Xx8sr-8m1DCxSPTJZdcpcJZOExc1c"
+    content = f"discord_val = '{discord_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Discord Token"
+    assert discord_part not in issues[0][2]
+
+
+def test_discord_token_varying_signature(run_scan):
+    # Valid Discord Bot Token: 24 base64, dot, 6 base64, dot, 27 base64
+    discord_part = "ODY4MDcxODUzMDMyMzU3OTc4" + "." + "YPqU6Q" + "." + "jNJcq1daGG3otexX3c1LcxCpgpQ"
+    content = f"discord_val = '{discord_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Discord Token"
+    assert discord_part not in issues[0][2]
+
+
+def test_discord_token_too_short_ignored(run_scan):
+    # Too short signature segment (26 characters instead of minimum 27)
+    discord_part = "ODY4MDcxODUzMDMyMzU3OTc4" + "." + "YPqU6Q" + "." + "jNJcq1daGG3otexX3c1LcxCpgp"
+    content = f"discord_val = '{discord_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_discord_placeholder_ignored(run_scan):
+    content = "discord_val = '" + "{DISCORD_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+    content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
+    issues_bot = run_scan(content_bot)
+    assert len(issues_bot) == 0
