@@ -47,6 +47,9 @@ PATTERNS = {
     "PyPI Token": re.compile(
         r"pypi-(?:[a-zA-Z0-9_\-]{85,}(?![a-zA-Z0-9_\-])|\{[a-zA-Z0-9_\-]+\})"
     ),
+    "Discord Token": re.compile(
+        r"(?:\b[a-zA-Z0-9_+\/-]{24,26}\.[a-zA-Z0-9_+\/-]{6}\.[a-zA-Z0-9_+\/-]{27,45}\b|\{DISCORD_(?:BOT_)?TOKEN\})"
+    ),
 }
 
 

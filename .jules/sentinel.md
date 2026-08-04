@@ -171,3 +171,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** Modern Sentry User Auth Tokens start with `sntryu_` followed by exactly 64 hexadecimal characters, while Organization Auth Tokens start with `sntrys_` followed by variable-length base64-encoded/URL-safe payloads (at least 40+ characters). Standard generic scanners or old token definitions miss these structured formats because they lack specific prefix lookaheads and length constraint assertions.
 
 **Prevention:** Define a dedicated `Sentry Token` scanning rule that recognizes both `sntryu_` (with exact 64 hexadecimal character constraints) and `sntrys_` (with 40+ base64/URL-safe character constraints) prefixes, exempts standard template placeholders, and includes comprehensive test verification cases.
+
+## 2026-08-04 - [Discord Bot Token Leakage Prevention]
+
+**Vulnerability:** Lack of secret scanner pattern coverage for Discord Bot Tokens, which pose high compromise risk to chat integrations, channels, and guild-level user data.
+
+**Learning:** Unlike other developer secrets with constant prefixes (e.g., `sk-` or `ghp_`), Discord Bot Tokens consist of three distinct base64/URL-safe segments separated by dots (user ID, timestamp, and signature). Their variable-length segments (specifically 27-45 characters for HMAC signature) make them prone to bypassing simple generic scanners.
+
+**Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
