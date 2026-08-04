@@ -16,9 +16,9 @@
   <h1>Awesome Jules Prompts <span aria-hidden="true">🌟</span></h1>
   <p>Curated prompts for Jules, an async coding agent from Google Labs.</p>
   <br>
-  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules 🚀</a><span aria-hidden="true"> • </span>
-  <a href="#contributing" aria-label="Contribute to this project">Contribute 🤝</a><span aria-hidden="true"> • </span>
-  <a href="SECURITY.md" aria-label="Read our Security Policy">Security Policy 🛡️</a>
+  <a href="https://jules.google.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Jules (opens in a new tab)">Visit Jules <span aria-hidden="true">🚀</span></a><span aria-hidden="true"> • </span>
+  <a href="#contributing" aria-label="Contribute to this project">Contribute <span aria-hidden="true">🤝</span></a><span aria-hidden="true"> • </span>
+  <a href="SECURITY.md" aria-label="Read our Security Policy">Security Policy <span aria-hidden="true">🛡️</span></a>
 </div>
 
 > [!TIP]
@@ -30,17 +30,17 @@
 
 ## Table of Contents <span aria-hidden="true">📖</span>
 
-- <a href="#everyday-dev-tasks" aria-label="Everyday Dev Tasks">Everyday Dev Tasks 🛠️</a>
-- <a href="#debugging" aria-label="Debugging">Debugging 🐞</a>
-- <a href="#documentation" aria-label="Documentation">Documentation 📝</a>
-- <a href="#testing" aria-label="Testing">Testing 🧪</a>
-- <a href="#security" aria-label="Security">Security 🛡️</a>
-- <a href="#package-management" aria-label="Package Management">Package Management 📦</a>
-- <a href="#ai-native-tasks" aria-label="AI-Native Tasks">AI-Native Tasks 🤖</a>
-- <a href="#context" aria-label="Context">Context 🏗️</a>
-- <a href="#fun--experimental" aria-label="Fun & Experimental">Fun & Experimental ✨</a>
-- <a href="#start-from-scratch" aria-label="Start from Scratch">Start from Scratch 🌱</a>
-- <a href="#contributing" aria-label="Contributing">Contributing 🤝</a>
+- <a href="#everyday-dev-tasks" aria-label="Everyday Dev Tasks">Everyday Dev Tasks <span aria-hidden="true">🛠️</span></a>
+- <a href="#debugging" aria-label="Debugging">Debugging <span aria-hidden="true">🐞</span></a>
+- <a href="#documentation" aria-label="Documentation">Documentation <span aria-hidden="true">📝</span></a>
+- <a href="#testing" aria-label="Testing">Testing <span aria-hidden="true">🧪</span></a>
+- <a href="#security" aria-label="Security">Security <span aria-hidden="true">🛡️</span></a>
+- <a href="#package-management" aria-label="Package Management">Package Management <span aria-hidden="true">📦</span></a>
+- <a href="#ai-native-tasks" aria-label="AI-Native Tasks">AI-Native Tasks <span aria-hidden="true">🤖</span></a>
+- <a href="#context" aria-label="Context">Context <span aria-hidden="true">🏗️</span></a>
+- <a href="#fun--experimental" aria-label="Fun & Experimental">Fun & Experimental <span aria-hidden="true">✨</span></a>
+- <a href="#start-from-scratch" aria-label="Start from Scratch">Start from Scratch <span aria-hidden="true">🌱</span></a>
+- <a href="#contributing" aria-label="Contributing">Contributing <span aria-hidden="true">🤝</span></a>
 
 ---
 
