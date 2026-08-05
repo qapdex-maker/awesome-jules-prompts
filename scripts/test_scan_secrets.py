@@ -547,3 +547,35 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_supports_color(monkeypatch):
+    from scripts.scan_secrets import supports_color
+
+    # Test when NO_COLOR is set
+    monkeypatch.setenv("NO_COLOR", "1")
+    assert supports_color() is False
+
+    # Test when FORCE_COLOR is set
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("FORCE_COLOR", "1")
+    assert supports_color() is True
+
+    # Test when TERM is "dumb"
+    monkeypatch.delenv("FORCE_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "dumb")
+    assert supports_color() is False
+
+
+def test_colorize(monkeypatch):
+    from scripts.scan_secrets import colorize
+
+    # Mock supports_color to return True
+    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: True)
+    colored = colorize("Success", "1;32")
+    assert colored == "\033[1;32mSuccess\033[0m"
+
+    # Mock supports_color to return False
+    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: False)
+    plain = colorize("Success", "1;32")
+    assert plain == "Success"
