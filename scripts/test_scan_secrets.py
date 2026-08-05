@@ -547,3 +547,18 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_scan_file_with_precomputed_filename(tmp_path):
+    # Test that scan_file behaves identically and accepts a pre-computed filename
+    filepath = tmp_path / "custom_image.png"
+    filepath.write_text("my_var = '" + "sk-" + "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6'")
+
+    # Passing the correct filename, which is ignored by extension
+    issues = scan_file(str(filepath), filename="custom_image.png")
+    assert len(issues) == 0
+
+    # Passing a non-ignored filename to force scanning
+    issues_scanned = scan_file(str(filepath), filename="custom_image.txt")
+    assert len(issues_scanned) == 1
+    assert issues_scanned[0][1] == "OpenAI API Key"
