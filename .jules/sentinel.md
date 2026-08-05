@@ -179,3 +179,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** Unlike other developer secrets with constant prefixes (e.g., `sk-` or `ghp_`), Discord Bot Tokens consist of three distinct base64/URL-safe segments separated by dots (user ID, timestamp, and signature). Their variable-length segments (specifically 27-45 characters for HMAC signature) make them prone to bypassing simple generic scanners.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
+
+## 2026-08-05 - [Grafana Service Account Token Leakage Prevention]
+
+**Vulnerability:** Lack of dedicated secret scanner patterns for Grafana Service Account Tokens, which carry administrative and read/write privileges to sensitive monitoring stacks, dashboards, and metrics.
+
+**Learning:** Grafana Service Account Tokens use a specific structured prefix format: `glsa_` followed by 32 alphanumeric characters, an underscore, and 8 hexadecimal characters. Generic scanners could miss this precise format or flag it with high-entropy alerts, which fails to provide descriptive feedback to developers.
+
+**Prevention:** Define a precise `Grafana Service Account Token` scanning rule that enforces matching of `glsa_` followed by exactly 32 alphanumeric characters, an underscore, and exactly 8 hexadecimal characters (incorporating a lookahead constraint to prevent partial matches), exempts bracketed placeholders, and integrates dedicated verification tests.
