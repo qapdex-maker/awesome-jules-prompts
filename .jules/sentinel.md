@@ -179,3 +179,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** Unlike other developer secrets with constant prefixes (e.g., `sk-` or `ghp_`), Discord Bot Tokens consist of three distinct base64/URL-safe segments separated by dots (user ID, timestamp, and signature). Their variable-length segments (specifically 27-45 characters for HMAC signature) make them prone to bypassing simple generic scanners.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
+
+## 2026-08-06 - [DigitalOcean Token Leakage Prevention]
+
+**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) could lead to contributors accidentally committing live DigitalOcean tokens when sharing integration examples or deploying documentation configurations.
+
+**Learning:** DigitalOcean Personal Access Tokens have a distinct structure beginning with the prefix `dop_v1_` followed by exactly 64 hexadecimal characters. Simple generic scanners or vague patterns might overlook or fail to validate length bounds precisely, risking token leakage.
+
+**Prevention:** Define a dedicated `DigitalOcean Token` scanning pattern matching `dop_v1_` followed by exactly 64 hexadecimal characters, use negative lookaheads to prevent matching partial/sub-token or overly long variants, support bracketed placeholder exemptions, and include comprehensive unit tests.
