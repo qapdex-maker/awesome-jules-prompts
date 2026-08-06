@@ -3,6 +3,29 @@ import os
 import re
 import sys
 
+
+def supports_color():
+    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+        return False
+    if "NO_COLOR" in os.environ:
+        return False
+    return os.environ.get("TERM") != "dumb"
+
+
+# ANSI Escape Codes
+RED = "\033[31m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+BLUE = "\033[34m"
+CYAN = "\033[36m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+
+def colorize(text, color):
+    return f"{color}{text}{RESET}" if supports_color() else text
+
+
 # ⚡ Bolt: Pre-compile regex patterns for better performance
 # Optimization: Converting 'Generic Token' regex from using the slow global case-insensitive (?i) flag
 # to explicit character classes for the keywords (e.g. [sS][eE][cC][rR][eE][tT]) yields a ~34% speedup
@@ -390,23 +413,28 @@ def main():
             issues = scan_file(filepath)
             if issues:
                 failed = True
-                print(f"⚠️ Potential Secret Leak in {filepath}:")
+                print(colorize(f"⚠️  Potential Secret Leak in {filepath}:", BOLD + RED))
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {label} - {line[:60]}...")
+                    lbl_part = colorize(label, BOLD + CYAN)
+                    line_part = colorize(f"Line {line_no}", YELLOW)
+                    print(f"  {line_part}: {lbl_part} - {line[:60]}...")
     if failed:
-        print("\n" + "=" * 60)
-        print("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:")
-        print("=" * 60)
-        print("1. Documentation/Examples: Use placeholder format with curly braces.")
-        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
+        border = colorize("=" * 60, BLUE)
+        print("\n" + border)
+        print(colorize("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", BOLD + RED))
+        print(border)
+        print(colorize("1. Documentation/Examples:", BOLD + CYAN) + " Use placeholder format with curly braces.")
+        placeholder_example = colorize("'sk-{OPENAI_API_KEY}'", BOLD + GREEN)
+        print(f"   • Change 'sk-proj-abc...' to {placeholder_example}")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print("\n2. Code/Configuration: Store credentials in environment variables.")
+        print("\n" + colorize("2. Code/Configuration:", BOLD + CYAN) + " Store credentials in environment variables.")
         print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print("\n3. Verify your fixes by running the scanner locally:")
-        print("   • Run: python3 scripts/scan_secrets.py")
-        print("=" * 60 + "\n")
+        print("\n" + colorize("3. Verify your fixes by running the scanner locally:", BOLD + CYAN))
+        run_command = colorize("python3 scripts/scan_secrets.py", BOLD + GREEN)
+        print(f"   • Run: {run_command}")
+        print(border + "\n")
         sys.exit(1)
-    print("✅ No potential secrets detected.")
+    print(colorize("✅ No potential secrets detected.", BOLD + GREEN))
 
 
 if __name__ == "__main__":
