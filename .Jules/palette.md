@@ -82,3 +82,8 @@ links to maintain fluent cross-document navigation.
 
 **Learning:** When decorative emojis are included inside anchor link text (such as in header menus or Table of Contents links), screen readers will verbally read the emoji descriptors alongside the link labels. For instance, "Everyday Dev Tasks hammer and wrench, link". Wrapping these decorative emojis in `<span aria-hidden="true">` inside the link labels improves auditory focus and ensures screen readers only announce the clean semantic text of the link.
 **Action:** Always wrap decorative emojis inside HTML anchor tags with `<span aria-hidden="true">` to ensure a clean, uncluttered auditory navigation experience.
+
+## 2026-08-04 - [Colorizing Terminal CLI Output for Security Scanners]
+
+**Learning:** When building security scanners or automated developer tools, presenting potential leaks in bold/red and providing troubleshooting steps in distinct color borders improves error scannability and developer response time. Integrating a `supports_color()` system prevents polluting non-interactive logs with raw ANSI escape sequences.
+**Action:** When adding or modifying CLI scripts, implement a robust, testable `supports_color` utility that honors `NO_COLOR` and non-TTY execution before wrapping stdout with ANSI styling.
