@@ -547,3 +547,63 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_digitalocean_token(run_scan):
+    # Valid DigitalOcean Token: dop_v1_ followed by exactly 64 hex characters
+    do_part = "dop_v1_" + "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    content = f"do_val = '{do_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "DigitalOcean Token"
+    assert do_part not in issues[0][2]
+
+
+def test_digitalocean_token_invalid_ignored(run_scan):
+    # Too short (63 hex characters)
+    do_part_short = "dop_v1_" + "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcde"
+    content_short = f"do_val = '{do_part_short}'"
+    issues_short = run_scan(content_short)
+    assert len(issues_short) == 0
+
+    # Too long (65 hex characters)
+    do_part_long = "dop_v1_" + "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdeff"
+    content_long = f"do_val = '{do_part_long}'"
+    issues_long = run_scan(content_long)
+    assert len(issues_long) == 0
+
+
+def test_digitalocean_placeholder_ignored(run_scan):
+    content = "do_val = '" + "dop_v1_" + "{DIGITALOCEAN_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_grafana_token(run_scan):
+    # Valid Grafana Token: glsa_ followed by 32 alphanumeric, underscore, 8 hex characters
+    grafana_part = "glsa_" + "abcdefghijklmnopqrstuvwxyz123456" + "_" + "12345678"
+    content = f"grafana_val = '{grafana_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Grafana Service Account Token"
+    assert grafana_part not in issues[0][2]
+
+
+def test_grafana_token_invalid_ignored(run_scan):
+    # Invalid length (31 chars before underscore)
+    grafana_part_short = "glsa_" + "abcdefghijklmnopqrstuvwxyz12345" + "_" + "12345678"
+    content_short = f"grafana_val = '{grafana_part_short}'"
+    issues_short = run_scan(content_short)
+    assert len(issues_short) == 0
+
+    # Invalid non-hex hash (9 characters)
+    grafana_part_long = "glsa_" + "abcdefghijklmnopqrstuvwxyz123456" + "_" + "123456789"
+    content_long = f"grafana_val = '{grafana_part_long}'"
+    issues_long = run_scan(content_long)
+    assert len(issues_long) == 0
+
+
+def test_grafana_placeholder_ignored(run_scan):
+    content = "grafana_val = '" + "glsa_" + "{GRAFANA_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
