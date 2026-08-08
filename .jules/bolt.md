@@ -144,3 +144,8 @@ complex regex patterns.
 
 **Learning:** Standard string `rfind` and index slicing in Python involves multiple manual checks and slicing operations, adding overhead during repository traversal and scanning loops. Replacing it with highly optimized, C-level string `rpartition` parsing (and reconstructing the extension with `ext = dot + ext if dot else ""`) avoids manual indices entirely and achieves an additional ~35% speedup on path parsing.
 **Action:** Prefer `rpartition` slicing over `rfind` indexing when parsing directory paths and extensions in performance-critical hot paths.
+
+## 2026-08-02 - In-memory binary/bytes pre-filtering speedup
+
+**Learning:** Running prefix matching and case-insensitive regex checks on decoded UTF-8 strings forces Python to decode the raw file content bytes for every single file scanned, adding massive string allocation and decoding overhead. Pre-encoding candidate prefixes and compiling case-insensitive pre-filtering regexes as bytes-based patterns allows pre-filtering checks to execute directly on raw file bytes (`raw_content`). This completely bypasses the expensive UTF-8 decoding phase for clean files, delivering an incredible speedup for repository-wide scans with 100% safety.
+**Action:** Compile candidate prefixes and case-insensitive pre-filter patterns as bytes regexes, and run matching directly on binary bytes before decoding file contents.
