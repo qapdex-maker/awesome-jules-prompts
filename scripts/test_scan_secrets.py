@@ -547,3 +547,28 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_supports_color(monkeypatch):
+    from scripts.scan_secrets import supports_color
+    import sys
+
+    # Test when NO_COLOR is set
+    monkeypatch.setenv("NO_COLOR", "1")
+    assert supports_color() is False
+
+    # Clear NO_COLOR
+    monkeypatch.delenv("NO_COLOR", raising=False)
+
+    # Test when TERM is dumb
+    monkeypatch.setenv("TERM", "dumb")
+    assert supports_color() is False
+
+    # Test when stdout is not a tty
+    monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
+    assert supports_color() is False
+
+    # Test when stdout is a tty, TERM is not dumb, and NO_COLOR is not set
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    assert supports_color() is True

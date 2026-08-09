@@ -368,8 +368,34 @@ def scan_file(filepath):
     return found_issues
 
 
+def supports_color():
+    """
+    Returns True if the running terminal supports ANSI escape color codes,
+    incorporating standard checks for isatty, NO_COLOR, and TERM values.
+    """
+    if "NO_COLOR" in os.environ:
+        return False
+    # Check if stdout is a tty
+    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+        return False
+    # Check for TERM variable
+    term = os.environ.get("TERM", "")
+    if term == "dumb":
+        return False
+    return True
+
+
 def main():
     failed = False
+    # Set up colors based on terminal support
+    use_color = supports_color()
+    RED = "\033[31m" if use_color else ""
+    GREEN = "\033[32m" if use_color else ""
+    YELLOW = "\033[33m" if use_color else ""
+    CYAN = "\033[36m" if use_color else ""
+    BOLD = "\033[1m" if use_color else ""
+    RESET = "\033[0m" if use_color else ""
+
     # ⚡ Bolt: Use directory pruning to skip ignored folders efficiently
     # Optimization: Adding '.jules', '.Jules', and '.github' to ignored_dirs avoids crawling and parsing
     # internal agent journals and workflow files which contain no secrets, reducing scanning time by ~48%.
@@ -390,23 +416,23 @@ def main():
             issues = scan_file(filepath)
             if issues:
                 failed = True
-                print(f"⚠️ Potential Secret Leak in {filepath}:")
+                print(f"{YELLOW}⚠️  Potential Secret Leak in {filepath}:{RESET}")
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {label} - {line[:60]}...")
+                    print(f"  Line {line_no}: {RED}{label}{RESET} - {line[:60]}...")
     if failed:
-        print("\n" + "=" * 60)
-        print("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:")
-        print("=" * 60)
-        print("1. Documentation/Examples: Use placeholder format with curly braces.")
+        print("\n" + f"{RED}{BOLD}" + "=" * 60 + f"{RESET}")
+        print(f"{CYAN}💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:{RESET}")
+        print(f"{RED}{BOLD}" + "=" * 60 + f"{RESET}")
+        print(f"{YELLOW}1. Documentation/Examples: Use placeholder format with curly braces.{RESET}")
         print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print("\n2. Code/Configuration: Store credentials in environment variables.")
+        print(f"\n{YELLOW}2. Code/Configuration: Store credentials in environment variables.{RESET}")
         print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print("\n3. Verify your fixes by running the scanner locally:")
-        print("   • Run: python3 scripts/scan_secrets.py")
-        print("=" * 60 + "\n")
+        print(f"\n{YELLOW}3. Verify your fixes by running the scanner locally:{RESET}")
+        print(f"   • Run: {GREEN}python3 scripts/scan_secrets.py{RESET}")
+        print(f"{RED}{BOLD}" + "=" * 60 + f"{RESET}\n")
         sys.exit(1)
-    print("✅ No potential secrets detected.")
+    print(f"{GREEN}✅ No potential secrets detected.{RESET}")
 
 
 if __name__ == "__main__":
