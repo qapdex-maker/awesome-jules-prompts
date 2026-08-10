@@ -41,6 +41,9 @@ PATTERNS = {
     "Groq API Key": re.compile(r"gsk_(?:[a-zA-Z0-9_]{52,}|\{[a-zA-Z0-9_\-]+\})"),
     "Replicate API Token": re.compile(r"r8_(?:[a-zA-Z0-9_]{37,}|\{[a-zA-Z0-9_\-]+\})"),
     "NPM Token": re.compile(r"npm_(?:[a-zA-Z0-9]{36}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"),
+    "DigitalOcean Token": re.compile(
+        r"dop_v1_(?:[a-fA-F0-9]{64}(?![a-fA-F0-9])|\{[a-zA-Z0-9_\-]+\})"
+    ),
     "Sentry Token": re.compile(
         r"sntry(?:u_[a-fA-F0-9]{64}(?![a-fA-F0-9])|s_[a-zA-Z0-9_+\/-]{40,}(?![a-zA-Z0-9_+\/-])|\{[a-zA-Z0-9_\-]+\})"
     ),
