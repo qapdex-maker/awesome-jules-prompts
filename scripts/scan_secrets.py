@@ -158,22 +158,29 @@ for name, cp in PATTERNS.items():
     if pfxs:
         PREFIX_MAPPING[name] = (pfxs, ci)
 
-# ⚡ Bolt: Pre-compile a unified, high-performance scanning pipeline.
-# By combining patterns, prefix information, and pre-compiled case-insensitive regexes into a static list of tuples (PIPELINE) at module level,
-# we completely bypass dictionary lookups, .items() dictionary instantiations, and membership checks
-# during the per-file scanning hot path, significantly boosting iteration efficiency and scanning speed.
-PIPELINE = []
+# ⚡ Bolt: Pre-compile a unified, high-performance scanning pipeline on raw bytes.
+# By combining bytes-based patterns, prefix information, and pre-compiled regexes into a static list of tuples (BYTES_PIPELINE) at module level,
+# we evaluate pre-filtering directly on raw file bytes. This completely bypasses UTF-8 string decoding and string allocation overhead
+# for clean files, yielding a highly optimized and extremely fast execution path.
+BYTES_PIPELINE = []
 for name, cp in PATTERNS.items():
-    if name in PREFIX_MAPPING:
+    if name == "Discord Token":
+        # ⚡ Bolt: Custom highly selective bytes-based pre-filter pattern for Discord Token to avoid always-evaluate fallback.
+        # It checks for either the bracketed placeholder b"{DISCORD_" or matches the dot-separated signature format using a fast bytes regex.
+        pfxs_bytes = [b"{DISCORD_"]
+        ci_regex_bytes = re.compile(b"\\.[a-zA-Z0-9_+\\/\\-]{6}\\.")
+        BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
+    elif name in PREFIX_MAPPING:
         pfxs, ci = PREFIX_MAPPING[name]
+        pfxs_bytes = [pfx.encode("utf-8") for pfx in pfxs]
         if ci:
-            # Pre-compile a fast case-insensitive regex pattern for those prefixes that require CI checking
-            ci_regex = re.compile(r"(?i)" + "|".join(re.escape(pfx) for pfx in pfxs))
-            PIPELINE.append((name, cp, pfxs, ci, ci_regex))
+            ci_regex_bytes = re.compile(b"(?i)" + b"|".join(re.escape(pfx.encode("utf-8")) for pfx in pfxs))
+            BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
         else:
-            PIPELINE.append((name, cp, pfxs, ci, None))
+            BYTES_PIPELINE.append((name, cp, pfxs_bytes, False, None))
     else:
-        PIPELINE.append((name, cp, None, False, None))
+        # Fallback for any other pattern without mapped prefixes (though currently none exist)
+        BYTES_PIPELINE.append((name, cp, None, False, None))
 
 # ⚡ Bolt: Global ignore lists for fast-path skipping of binary, lock, and huge files.
 # Checking filenames and extensions is done in pure Python string logic and completely
@@ -298,39 +305,36 @@ def scan_file(filepath):
         # ⚡ Bolt: Check for null bytes to filter out binary files (e.g. executables).
         if b"\x00" in raw_content:
             return found_issues
-        content = raw_content.decode("utf-8", errors="ignore")
 
-        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering via the pre-compiled PIPELINE.
-        # This determines which regexes are active for the current file content.
-        # It completely avoids executing expensive, backtracking-prone regexes
-        # on files that don't even contain candidate prefix substrings.
-        # Optimization: Iterating over a pre-compiled list of tuples directly and avoiding dictionary allocation/lookups
-        # eliminates dictionary overhead in the file scanning loop, yielding a cleaner and even faster hot path.
-        # Optimization: Using a pre-compiled case-insensitive regex search instead of allocating and lowercasing
-        # the entire content via content.lower() yields a massive (~350x) speedup for case-insensitive checks on large files.
+        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering directly on raw file bytes via BYTES_PIPELINE.
+        # This completely avoids UTF-8 string decoding and allocation overhead for clean files, allowing immediate early return.
+        # It evaluates pre-filtering using C-level bytes searches and bytes regexes, yielding huge performance gains.
         active_patterns = []
-        for name, cp, pfxs, ci, ci_regex in PIPELINE:
-            if pfxs is None:
+        for name, cp, pfxs_bytes, ci, ci_regex_bytes in BYTES_PIPELINE:
+            if pfxs_bytes is None:
                 # Safe fallback: if we couldn't parse the prefix, always evaluate
                 active_patterns.append((name, cp))
                 continue
 
-            # Fast case-sensitive check using a simple loop
+            # Fast case-sensitive check using a simple loop over bytes prefixes
             matched = False
-            for pfx in pfxs:
-                if pfx in content:
+            for pfx in pfxs_bytes:
+                if pfx in raw_content:
                     matched = True
                     break
             if matched:
                 active_patterns.append((name, cp))
                 continue
 
-            # Case-insensitive check using highly optimized pre-compiled regex search (bypassing content.lower())
-            if ci and ci_regex.search(content):
+            # Case-insensitive or pattern-based check using highly optimized pre-compiled bytes regex search
+            if ci and ci_regex_bytes.search(raw_content):
                 active_patterns.append((name, cp))
 
         if not active_patterns:
             return found_issues
+
+        # Decode raw bytes to string only if the file is confirmed to have active matches
+        content = raw_content.decode("utf-8", errors="ignore")
 
         # ⚡ Bolt: Detailed whole-file scanning directly on active patterns.
         # Scanning the whole content in one pass via finditer() directly is significantly faster
