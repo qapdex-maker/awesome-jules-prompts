@@ -93,6 +93,9 @@ PATTERNS = {
     "DigitalOcean Token": re.compile(
         r"dop_v1_(?:[a-fA-F0-9]{64}(?![a-fA-F0-9])|\{[a-zA-Z0-9_\-]+\})"
     ),
+    "Grafana Service Account Token": re.compile(
+        r"glsa_(?:[a-zA-Z0-9]{32}_[a-fA-F0-9]{8}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"
+    ),
 }
 
 
