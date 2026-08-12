@@ -180,10 +180,10 @@ and verify coverage using concatenated test assertions.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
 
-## 2026-08-05 - [Grafana Service Account Token Leakage Prevention]
+## 2026-08-06 - [DigitalOcean Token Leakage Prevention]
 
-**Vulnerability:** Lack of dedicated secret scanner patterns for Grafana Service Account Tokens, which carry administrative and read/write privileges to sensitive monitoring stacks, dashboards, and metrics.
+**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) could lead to contributors accidentally committing live DigitalOcean tokens when sharing integration examples or deploying documentation configurations.
 
-**Learning:** Grafana Service Account Tokens use a specific structured prefix format: `glsa_` followed by 32 alphanumeric characters, an underscore, and 8 hexadecimal characters. Generic scanners could miss this precise format or flag it with high-entropy alerts, which fails to provide descriptive feedback to developers.
+**Learning:** DigitalOcean Personal Access Tokens have a distinct structure beginning with the prefix `dop_v1_` followed by exactly 64 hexadecimal characters. Simple generic scanners or vague patterns might overlook or fail to validate length bounds precisely, risking token leakage.
 
-**Prevention:** Define a precise `Grafana Service Account Token` scanning rule that enforces matching of `glsa_` followed by exactly 32 alphanumeric characters, an underscore, and exactly 8 hexadecimal characters (incorporating a lookahead constraint to prevent partial matches), exempts bracketed placeholders, and integrates dedicated verification tests.
+**Prevention:** Define a dedicated `DigitalOcean Token` scanning pattern matching `dop_v1_` followed by exactly 64 hexadecimal characters, use negative lookaheads to prevent matching partial/sub-token or overly long variants, support bracketed placeholder exemptions, and include comprehensive unit tests.

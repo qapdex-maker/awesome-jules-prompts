@@ -550,24 +550,33 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_grafana_service_account_token(run_scan):
-    # Valid Grafana service account token format: glsa_ followed by 32 alphanumeric, underscore, 8 hex characters
-    # Concatenated to prevent scanning trigger
-    content = "grafana_val = '" + "glsa_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6_1234abcd'"
+def test_digitalocean_token(run_scan):
+    # Valid DO Token: dop_v1_ followed by exactly 64 hexadecimal characters
+    do_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6"
+    content = f"do_val = '{do_part}'"
     issues = run_scan(content)
     assert len(issues) == 1
-    assert issues[0][1] == "Grafana Service Account Token"
+    assert issues[0][1] == "DigitalOcean Token"
+    assert do_part not in issues[0][2]
 
 
-def test_grafana_service_account_token_too_short_ignored(run_scan):
-    # Too short hash segment (7 characters after underscore instead of 8)
-    content = "grafana_val = '" + "glsa_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6_1234abc'"
+def test_digitalocean_token_too_short_ignored(run_scan):
+    # 63 characters instead of 64
+    do_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f"
+    content = f"do_val = '{do_part}'"
     issues = run_scan(content)
     assert len(issues) == 0
 
 
-def test_grafana_service_account_token_placeholder_ignored(run_scan):
-    # Placeholder format should be ignored
-    content = "grafana_val = '" + "glsa_" + "{GRAFANA_SERVICE_ACCOUNT_TOKEN}'"
+def test_digitalocean_token_too_long_ignored(run_scan):
+    # 65 characters instead of 64
+    do_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f67"
+    content = f"do_val = '{do_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_placeholder_ignored(run_scan):
+    content = "do_val = '" + "dop_v1_" + "{DIGITALOCEAN_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0

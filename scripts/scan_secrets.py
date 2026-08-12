@@ -90,8 +90,8 @@ PATTERNS = {
     "Discord Token": re.compile(
         r"(?:\b[a-zA-Z0-9_+\/-]{24,26}\.[a-zA-Z0-9_+\/-]{6}\.[a-zA-Z0-9_+\/-]{27,45}\b|\{DISCORD_(?:BOT_)?TOKEN\})"
     ),
-    "Grafana Service Account Token": re.compile(
-        r"glsa_(?:[a-zA-Z0-9]{32}_[a-fA-F0-9]{8}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"
+    "DigitalOcean Token": re.compile(
+        r"dop_v1_(?:[a-fA-F0-9]{64}(?![a-fA-F0-9])|\{[a-zA-Z0-9_\-]+\})"
     ),
 }
 
