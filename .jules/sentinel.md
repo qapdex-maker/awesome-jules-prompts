@@ -180,10 +180,10 @@ and verify coverage using concatenated test assertions.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
 
-## 2026-08-05 - [DigitalOcean and Grafana Token Scanning]
+## 2026-08-06 - [DigitalOcean Token Leakage Prevention]
 
-**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) and Grafana Service Account Tokens, leading to potential credentials leakage.
+**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) could lead to contributors accidentally committing live DigitalOcean credentials when sharing examples or code configurations.
 
-**Learning:** When scanning for exact-length hexadecimal payloads (like DigitalOcean's 64-character tokens), using lookaheads (e.g., `(?![a-fA-F0-9])`) prevents matching longer hex strings, but will still succeed on a substring of a longer string if the trailing character is non-hex (e.g., matching a 64-char block inside a 65-char string ending with 'g'). This is because the engine successfully matches the 64 hex characters, and the lookahead checks that the 65th character ('g') is not hex, which is true.
+**Learning:** DigitalOcean Personal Access Tokens have a modern, structured format starting with the prefix `dop_v1_` followed by exactly 64 hexadecimal characters. Generic scanning rules might miss these specialized API keys unless precise prefix patterns, exact length constraints, and word boundaries are explicitly configured and tested.
 
-**Prevention:** Use precise negative lookaheads and boundary/lookbehind patterns, and ensure test assertions for length limits explicitly test both characters in and out of the match class (such as trailing hex characters) to ensure the pattern is robust.
+**Prevention:** Define a dedicated `DigitalOcean Token` rule that matches prefixes like `dop_v1_` followed by exactly 64 hexadecimal characters, employs negative lookaheads to prevent partial/invalid matches, exempts curly-braced placeholders, and verify coverage with robust unit tests.
