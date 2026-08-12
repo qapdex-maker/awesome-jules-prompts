@@ -83,7 +83,7 @@ links to maintain fluent cross-document navigation.
 **Learning:** When decorative emojis are included inside anchor link text (such as in header menus or Table of Contents links), screen readers will verbally read the emoji descriptors alongside the link labels. For instance, "Everyday Dev Tasks hammer and wrench, link". Wrapping these decorative emojis in `<span aria-hidden="true">` inside the link labels improves auditory focus and ensures screen readers only announce the clean semantic text of the link.
 **Action:** Always wrap decorative emojis inside HTML anchor tags with `<span aria-hidden="true">` to ensure a clean, uncluttered auditory navigation experience.
 
-## 2026-08-04 - [CLI Terminal UX & Graceful Color Degradation]
+## 2026-08-04 - [Colorized CLI Outputs with Graceful Fallbacks]
 
-**Learning:** Terminal CLI tools can leverage ANSI escape codes to deliver high-visibility, scannable colors for critical states (successes, warnings, troubleshooting steps). However, to prevent broken output or noisy logs in non-interactive environments, robust environment checks (detecting `sys.stdout.isatty()`, `NO_COLOR`, and `TERM=dumb`) are essential to guarantee a graceful fallback to plaintext.
-**Action:** Always wrap ANSI escape codes inside a fallback utility that checks for standard interactive and color-capable terminal environments before rendering.
+**Learning:** Enhancing CLI developer tools with terminal colorization significantly boosts scannability, helping developers quickly identify key status signals (such as successful tasks, potential errors, or critical troubleshooting steps). To prevent breaking automated runners, log collectors, or non-interactive environments, implementing a robust check (verifying `sys.stdout.isatty()`, the presence of the `NO_COLOR` standard environment variable, and non-dumb `TERM` settings) ensures graceful degradation to raw unformatted plaintext.
+**Action:** Always provide a robust, non-intrusive `supports_color()` environment check and separate text wrapping functions when colorizing console outputs.

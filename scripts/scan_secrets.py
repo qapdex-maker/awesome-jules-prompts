@@ -3,27 +3,35 @@ import os
 import re
 import sys
 
+# ANSI escape codes for terminal colorizing
+COLOR_GREEN = "\033[92m"
+COLOR_RED = "\033[91m"
+COLOR_YELLOW = "\033[93m"
+COLOR_BLUE = "\033[94m"
+COLOR_BOLD = "\033[1m"
+COLOR_RESET = "\033[0m"
+
 
 def supports_color():
-    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
-        return False
+    """
+    Returns True if the running system's stdout supports color.
+    Checks sys.stdout.isatty(), NO_COLOR, and TERM values.
+    """
     if "NO_COLOR" in os.environ:
         return False
-    return os.environ.get("TERM") != "dumb"
+    if not sys.stdout.isatty():
+        return False
+    term = os.environ.get("TERM", "")
+    if term in ("dumb", "unknown"):
+        return False
+    return True
 
 
-# ANSI Escape Codes
-RED = "\033[31m"
-GREEN = "\033[32m"
-YELLOW = "\033[33m"
-BLUE = "\033[34m"
-CYAN = "\033[36m"
-BOLD = "\033[1m"
-RESET = "\033[0m"
-
-
-def colorize(text, color):
-    return f"{color}{text}{RESET}" if supports_color() else text
+def colorize(text, *colors):
+    """Wraps text with ANSI escape codes if color is supported."""
+    if supports_color():
+        return "".join(colors) + text + COLOR_RESET
+    return text
 
 
 # ⚡ Bolt: Pre-compile regex patterns for better performance
@@ -497,23 +505,23 @@ def main():
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True
-                print(f"{BOLD}{RED}⚠️ Potential Secret Leak in {filepath}:{RESET}")
+                print(colorize(f"⚠️ Potential Secret Leak in {filepath}:", COLOR_RED, COLOR_BOLD))
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {BOLD}{YELLOW}{label}{RESET} - {line[:60]}...")
+                    print(f"  Line {line_no}: {colorize(label, COLOR_YELLOW)} - {line[:60]}...")
     if failed:
-        print("\n" + f"{CYAN}" + "=" * 60)
-        print(f"{BOLD}{YELLOW}💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:{RESET}")
-        print(f"{CYAN}" + "=" * 60 + f"{RESET}")
-        print(f"{BOLD}1. Documentation/Examples: Use placeholder format with curly braces.{RESET}")
+        print("\n" + colorize("=" * 60, COLOR_BLUE))
+        print(colorize("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", COLOR_YELLOW, COLOR_BOLD))
+        print(colorize("=" * 60, COLOR_BLUE))
+        print(colorize("1. Documentation/Examples:", COLOR_BOLD) + " Use placeholder format with curly braces.")
         print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print(f"\n{BOLD}2. Code/Configuration: Store credentials in environment variables.{RESET}")
+        print("\n" + colorize("2. Code/Configuration:", COLOR_BOLD) + " Store credentials in environment variables.")
         print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print(f"\n{BOLD}3. Verify your fixes by running the scanner locally:{RESET}")
-        print(f"   • Run: {BOLD}{GREEN}python3 scripts/scan_secrets.py{RESET}")
-        print(f"{CYAN}" + "=" * 60 + f"{RESET}\n")
+        print("\n" + colorize("3. Verify your fixes by running the scanner locally:", COLOR_BOLD))
+        print("   • Run: " + colorize("python3 scripts/scan_secrets.py", COLOR_GREEN))
+        print(colorize("=" * 60, COLOR_BLUE) + "\n")
         sys.exit(1)
-    print(f"{BOLD}{GREEN}✅ No potential secrets detected.{RESET}")
+    print(colorize("✅ No potential secrets detected.", COLOR_GREEN, COLOR_BOLD))
 
 
 if __name__ == "__main__":
