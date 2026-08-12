@@ -180,10 +180,10 @@ and verify coverage using concatenated test assertions.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
 
-## 2026-08-06 - [DigitalOcean Token Leakage Prevention]
+## 2026-08-05 - [DigitalOcean and Grafana Token Scanning]
 
-**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) could lead to contributors accidentally committing live DigitalOcean tokens when sharing deployment configurations or infrastructure examples.
+**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) and Grafana Service Account Tokens, leading to potential credentials leakage.
 
-**Learning:** Modern DigitalOcean PATs start with a specific constant prefix (`dop_v1_`) followed by exactly 64 hexadecimal characters. Standard generic token regexes fail to match these structured tokens cleanly or suffer from false positives if length and character boundaries are not strictly constrained with negative lookaheads.
+**Learning:** When scanning for exact-length hexadecimal payloads (like DigitalOcean's 64-character tokens), using lookaheads (e.g., `(?![a-fA-F0-9])`) prevents matching longer hex strings, but will still succeed on a substring of a longer string if the trailing character is non-hex (e.g., matching a 64-char block inside a 65-char string ending with 'g'). This is because the engine successfully matches the 64 hex characters, and the lookahead checks that the 65th character ('g') is not hex, which is true.
 
-**Prevention:** Define a dedicated `DigitalOcean Token` scanning pattern matching `dop_v1_` followed by exactly 64 hexadecimal characters, enforce boundary controls via negative lookaheads, support bracketed template placeholders, and verify implementation correctness with dedicated unit tests.
+**Prevention:** Use precise negative lookaheads and boundary/lookbehind patterns, and ensure test assertions for length limits explicitly test both characters in and out of the match class (such as trailing hex characters) to ensure the pattern is robust.

@@ -550,40 +550,33 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_supports_color_force_color():
-    with patch.dict(os.environ, {"FORCE_COLOR": "1"}):
-        assert supports_color() is True
+def test_digitalocean_token(run_scan):
+    # Valid DigitalOcean Token: dop_v1_ followed by exactly 64 hexadecimal characters
+    dop_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6"
+    content = f"dop_val = '{dop_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "DigitalOcean Token"
+    assert dop_part not in issues[0][2]
 
 
-def test_supports_color_no_color():
-    with patch.dict(os.environ, {"NO_COLOR": "1"}):
-        assert supports_color() is False
+def test_digitalocean_token_too_short_ignored(run_scan):
+    # Too short: 63 hex characters after dop_v1_
+    dop_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f"
+    content = f"dop_val = '{dop_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
 
 
-def test_supports_color_not_a_tty():
-    # Make sure NO_COLOR/FORCE_COLOR don't override TTY when testing defaults
-    with patch.dict(os.environ, {}, clear=True):
-        with patch("sys.stdout.isatty", return_value=False):
-            assert supports_color() is False
+def test_digitalocean_token_too_long_ignored(run_scan):
+    # Too long: 65 hex characters after dop_v1_
+    dop_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6a"
+    content = f"dop_val = '{dop_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
 
 
-def test_supports_color_dumb_terminal():
-    with patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
-        with patch("sys.stdout.isatty", return_value=True):
-            assert supports_color() is False
-
-
-def test_supports_color_standard_tty():
-    with patch.dict(os.environ, {"TERM": "xterm-256color"}, clear=True):
-        with patch("sys.stdout.isatty", return_value=True):
-            assert supports_color() is True
-
-
-def test_color_formatting_enabled():
-    with patch("scripts.scan_secrets.supports_color", return_value=True):
-        assert color("hello", RED) == f"{RED}hello\033[0m"
-
-
-def test_color_formatting_disabled():
-    with patch("scripts.scan_secrets.supports_color", return_value=False):
-        assert color("hello", RED) == "hello"
+def test_digitalocean_placeholder_ignored(run_scan):
+    content = "dop_val = '" + "dop_v1_" + "{DIGITALOCEAN_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0

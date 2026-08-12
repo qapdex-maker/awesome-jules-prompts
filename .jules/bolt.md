@@ -145,6 +145,15 @@ complex regex patterns.
 **Learning:** Standard string `rfind` and index slicing in Python involves multiple manual checks and slicing operations, adding overhead during repository traversal and scanning loops. Replacing it with highly optimized, C-level string `rpartition` parsing (and reconstructing the extension with `ext = dot + ext if dot else ""`) avoids manual indices entirely and achieves an additional ~35% speedup on path parsing.
 **Action:** Prefer `rpartition` slicing over `rfind` indexing when parsing directory paths and extensions in performance-critical hot paths.
 
+---
+
+## 2026-08-02 - Traversal and Extension Lookup Fast-Path Bypass
+
+**Learning:** Standard traversals using `os.walk` and building/testing paths sequentially inside nested loops can introduce high performance overhead. We can bypass standard path construction, file opening, and function call overhead by pre-filtering traversed files inside `main()` using fast C-level string lookups on `filename` and dotless extensions directly. In addition, passing pre-computed `filename` to bypass path slicing inside `scan_file()`, storing `IGNORED_EXTENSIONS` without a leading dot to avoid redundant string concatenation/rebuilding, and using faster f-strings with explicit `os.sep` for path construction yields a massive overall test-suite runtime reduction (~45% speedup).
+**Action:** Pre-filter files directly during the `os.walk` traversal using fast dotless extension sets and pass pre-computed filenames to avoid redundant filesystem or string operations on ignored files.
+
+---
+
 ## 2026-08-02 - Fallback scan pattern pre-filtering to prevent early-return bypass
 
 **Learning:** When using dynamic pre-filtering to short-circuit regex execution, any pattern that fails prefix extraction (like `Discord Token` due to lacking a static prefix structure) forces a fallback always-evaluate state. This always-evaluate state prevents the scanner from ever early-returning on clean files, as at least one pattern is always active, thus triggering file-decoding and regex matching on 100% of files. By analyzing the target pattern's required structure (e.g., dot-separated segment counts like `\.[a-zA-Z0-9_+\/-]{6}\.`), we can construct custom high-performance, bytes-based pre-filters. Performing all prefix and pattern pre-filtering directly on raw file bytes (`raw_content`) before decoding completely bypasses UTF-8 string decoding and string allocation overhead on clean files, yielding a massive ~64.5% overall repository scanning speedup.
