@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
-from scripts.scan_secrets import scan_file, PATTERNS, supports_color, color, RED
+from scripts.scan_secrets import scan_file, PATTERNS, supports_color, colorize, COLOR_RED
 
 
 def create_temp_file(content):
@@ -590,53 +590,41 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_supports_color_no_tty(monkeypatch):
-    import sys
+def test_supports_color(monkeypatch):
     from scripts.scan_secrets import supports_color
-
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
-    assert supports_color() is False
-
-
-def test_supports_color_with_no_color_env(monkeypatch):
     import sys
-    from scripts.scan_secrets import supports_color
 
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    # Test when NO_COLOR is set
     monkeypatch.setenv("NO_COLOR", "1")
-    monkeypatch.setenv("TERM", "xterm-256color")
     assert supports_color() is False
 
+    # Clear NO_COLOR
+    monkeypatch.delenv("NO_COLOR", raising=False)
 
-def test_supports_color_with_dumb_term(monkeypatch):
-    import sys
-    from scripts.scan_secrets import supports_color
-
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
-    if "NO_COLOR" in os.environ:
-        monkeypatch.delenv("NO_COLOR")
+    # Test when TERM is dumb
     monkeypatch.setenv("TERM", "dumb")
     assert supports_color() is False
 
-
-def test_supports_color_enabled(monkeypatch):
-    import sys
-    from scripts.scan_secrets import supports_color
-
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
-    if "NO_COLOR" in os.environ:
-        monkeypatch.delenv("NO_COLOR")
+    # Test when stdout is not a tty
     monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
+    assert supports_color() is False
+
+    # Test when stdout is a tty, TERM is not dumb, and NO_COLOR is not set
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
     assert supports_color() is True
 
 
-def test_colorize_formatting(monkeypatch):
-    from scripts.scan_secrets import colorize, RED
+def test_colorize(monkeypatch):
+    import sys
+    from scripts.scan_secrets import colorize, COLOR_RED
 
-    # Test when color is disabled
-    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: False)
-    assert colorize("test_str", RED) == "test_str"
+    # Color support off
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
+    assert colorize("test", COLOR_RED) == "test"
 
-    # Test when color is enabled
-    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: True)
-    assert colorize("test_str", RED) == f"{RED}test_str\033[0m"
+    # Color support on
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "xterm-256color")
+    assert colorize("test", COLOR_RED) == f"{COLOR_RED}test\033[0m"

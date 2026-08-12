@@ -3,27 +3,37 @@ import os
 import re
 import sys
 
+# ANSI escape sequences for colorized terminal output
+COLOR_RED = "\033[91m"
+COLOR_GREEN = "\033[92m"
+COLOR_YELLOW = "\033[93m"
+COLOR_CYAN = "\033[96m"
+COLOR_BOLD = "\033[1m"
+COLOR_RESET = "\033[0m"
+
 
 def supports_color():
-    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+    """
+    Returns True if the running terminal supports ANSI color escape codes,
+    following standard conventions like NO_COLOR, TERM, and isatty checks.
+    """
+    if os.environ.get("NO_COLOR"):
         return False
-    if "NO_COLOR" in os.environ:
+    if not sys.stdout.isatty():
         return False
-    return os.environ.get("TERM") != "dumb"
+    term = os.environ.get("TERM", "")
+    if term in ("dumb", ""):
+        return False
+    return True
 
 
-# ANSI Escape Codes
-RED = "\033[31m"
-GREEN = "\033[32m"
-YELLOW = "\033[33m"
-BLUE = "\033[34m"
-CYAN = "\033[36m"
-BOLD = "\033[1m"
-RESET = "\033[0m"
-
-
-def colorize(text, color):
-    return f"{color}{text}{RESET}" if supports_color() else text
+def colorize(text, color_code):
+    """
+    Applies ANSI escape color wrapping to text if terminal supports color.
+    """
+    if supports_color():
+        return f"{color_code}{text}{COLOR_RESET}"
+    return text
 
 
 # ⚡ Bolt: Pre-compile regex patterns for better performance
@@ -205,7 +215,7 @@ for name, cp in PATTERNS.items():
         # It checks for either the bracketed placeholder b"{DISCORD_" or matches the dot-separated signature format using a fast bytes regex.
         pfxs_bytes = [b"{DISCORD_"]
         ci_regex_bytes = re.compile(b"\\.[a-zA-Z0-9_+\\/\\-]{6}\\.")
-        BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
+        PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
     elif name in PREFIX_MAPPING:
         pfxs, ci = PREFIX_MAPPING[name]
         pfxs_bytes = [pfx.encode("utf-8") for pfx in pfxs]
@@ -216,7 +226,7 @@ for name, cp in PATTERNS.items():
         else:
             PIPELINE.append((name, cp, pfxs_bytes, ci, None))
     else:
-        PIPELINE.append((name, cp, None, False, None, None))
+        PIPELINE.append((name, cp, None, False, None))
 
 # ⚡ Bolt: Global ignore lists for fast-path skipping of binary, lock, and huge files.
 # Checking filenames and extensions is done in pure Python string logic and completely
@@ -356,8 +366,8 @@ def scan_file(filepath, filename=None):
         # directly on the raw file bytes (raw_content). This completely bypasses the expensive UTF-8 string
         # decoding and memory allocation on all clean files, delivering an incredible speedup for repository scans.
         active_patterns = []
-        for name, cp, pfxs_bytes, ci, ci_regex_bytes in PIPELINE:
-            if pfxs_bytes is None:
+        for name, cp, pfxs, ci, ci_regex in PIPELINE:
+            if pfxs is None:
                 # Safe fallback: if we couldn't parse the prefix, always evaluate
                 active_patterns.append((name, cp))
                 continue
@@ -418,8 +428,34 @@ def scan_file(filepath, filename=None):
     return found_issues
 
 
+def supports_color():
+    """
+    Returns True if the running terminal supports ANSI escape color codes,
+    incorporating standard checks for isatty, NO_COLOR, and TERM values.
+    """
+    if "NO_COLOR" in os.environ:
+        return False
+    # Check if stdout is a tty
+    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+        return False
+    # Check for TERM variable
+    term = os.environ.get("TERM", "")
+    if term == "dumb":
+        return False
+    return True
+
+
 def main():
     failed = False
+    # Set up colors based on terminal support
+    use_color = supports_color()
+    RED = "\033[31m" if use_color else ""
+    GREEN = "\033[32m" if use_color else ""
+    YELLOW = "\033[33m" if use_color else ""
+    CYAN = "\033[36m" if use_color else ""
+    BOLD = "\033[1m" if use_color else ""
+    RESET = "\033[0m" if use_color else ""
+
     # ⚡ Bolt: Use directory pruning to skip ignored folders efficiently
     # Optimization: Adding '.jules', '.Jules', and '.github' to ignored_dirs avoids crawling and parsing
     # internal agent journals and workflow files which contain no secrets, reducing scanning time by ~48%.
@@ -451,29 +487,25 @@ def main():
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True
-                print(colorize(f"⚠️  Potential Secret Leak in {filepath}:", BOLD + RED))
+                print(colorize(f"⚠️ Potential Secret Leak in {filepath}:", COLOR_YELLOW))
                 for line_no, label, line in issues:
-                    lbl_part = colorize(label, BOLD + CYAN)
-                    line_part = colorize(f"Line {line_no}", YELLOW)
-                    print(f"  {line_part}: {lbl_part} - {line[:60]}...")
+                    print(f"  Line {line_no}: {colorize(label, COLOR_RED)} - {line[:60]}...")
     if failed:
-        border = colorize("=" * 60, BLUE)
+        border = colorize("=" * 60, COLOR_RED)
         print("\n" + border)
-        print(colorize("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", BOLD + RED))
+        print(colorize("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", COLOR_BOLD + COLOR_RED))
         print(border)
-        print(colorize("1. Documentation/Examples:", BOLD + CYAN) + " Use placeholder format with curly braces.")
-        placeholder_example = colorize("'sk-{OPENAI_API_KEY}'", BOLD + GREEN)
-        print(f"   • Change 'sk-proj-abc...' to {placeholder_example}")
+        print(colorize("1. Documentation/Examples: Use placeholder format with curly braces.", COLOR_BOLD + COLOR_CYAN))
+        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print("\n" + colorize("2. Code/Configuration:", BOLD + CYAN) + " Store credentials in environment variables.")
+        print(colorize("\n2. Code/Configuration: Store credentials in environment variables.", COLOR_BOLD + COLOR_CYAN))
         print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print("\n" + colorize("3. Verify your fixes by running the scanner locally:", BOLD + CYAN))
-        run_command = colorize("python3 scripts/scan_secrets.py", BOLD + GREEN)
-        print(f"   • Run: {run_command}")
+        print(colorize("\n3. Verify your fixes by running the scanner locally:", COLOR_BOLD + COLOR_CYAN))
+        print("   • Run: python3 scripts/scan_secrets.py")
         print(border + "\n")
         sys.exit(1)
-    print(colorize("✅ No potential secrets detected.", BOLD + GREEN))
+    print(colorize("✅ No potential secrets detected.", COLOR_GREEN))
 
 
 if __name__ == "__main__":
-    main() 
+    main()

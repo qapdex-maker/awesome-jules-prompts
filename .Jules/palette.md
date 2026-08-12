@@ -83,7 +83,7 @@ links to maintain fluent cross-document navigation.
 **Learning:** When decorative emojis are included inside anchor link text (such as in header menus or Table of Contents links), screen readers will verbally read the emoji descriptors alongside the link labels. For instance, "Everyday Dev Tasks hammer and wrench, link". Wrapping these decorative emojis in `<span aria-hidden="true">` inside the link labels improves auditory focus and ensures screen readers only announce the clean semantic text of the link.
 **Action:** Always wrap decorative emojis inside HTML anchor tags with `<span aria-hidden="true">` to ensure a clean, uncluttered auditory navigation experience.
 
-## 2026-08-04 - [Colorizing Terminal CLI Output for Security Scanners]
+## 2026-08-04 - [Colorized CLI Outputs with Graceful Fallbacks]
 
-**Learning:** When building security scanners or automated developer tools, presenting potential leaks in bold/red and providing troubleshooting steps in distinct color borders improves error scannability and developer response time. Integrating a `supports_color()` system prevents polluting non-interactive logs with raw ANSI escape sequences.
-**Action:** When adding or modifying CLI scripts, implement a robust, testable `supports_color` utility that honors `NO_COLOR` and non-TTY execution before wrapping stdout with ANSI styling.
+**Learning:** Enhancing CLI developer tools with terminal colorization significantly boosts scannability, helping developers quickly identify key status signals (such as successful tasks, potential errors, or critical troubleshooting steps). To prevent breaking automated runners, log collectors, or non-interactive environments, implementing a robust check (verifying `sys.stdout.isatty()`, the presence of the `NO_COLOR` standard environment variable, and non-dumb `TERM` settings) ensures graceful degradation to raw unformatted plaintext.
+**Action:** Always provide a robust, non-intrusive `supports_color()` environment check and separate text wrapping functions when colorizing console outputs.
