@@ -1,7 +1,8 @@
 import os
 import tempfile
 import pytest
-from scripts.scan_secrets import scan_file, PATTERNS
+from unittest.mock import patch, MagicMock
+from scripts.scan_secrets import scan_file, PATTERNS, supports_color, color, RED
 
 
 def create_temp_file(content):
@@ -547,3 +548,42 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_supports_color_force_color():
+    with patch.dict(os.environ, {"FORCE_COLOR": "1"}):
+        assert supports_color() is True
+
+
+def test_supports_color_no_color():
+    with patch.dict(os.environ, {"NO_COLOR": "1"}):
+        assert supports_color() is False
+
+
+def test_supports_color_not_a_tty():
+    # Make sure NO_COLOR/FORCE_COLOR don't override TTY when testing defaults
+    with patch.dict(os.environ, {}, clear=True):
+        with patch("sys.stdout.isatty", return_value=False):
+            assert supports_color() is False
+
+
+def test_supports_color_dumb_terminal():
+    with patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
+        with patch("sys.stdout.isatty", return_value=True):
+            assert supports_color() is False
+
+
+def test_supports_color_standard_tty():
+    with patch.dict(os.environ, {"TERM": "xterm-256color"}, clear=True):
+        with patch("sys.stdout.isatty", return_value=True):
+            assert supports_color() is True
+
+
+def test_color_formatting_enabled():
+    with patch("scripts.scan_secrets.supports_color", return_value=True):
+        assert color("hello", RED) == f"{RED}hello\033[0m"
+
+
+def test_color_formatting_disabled():
+    with patch("scripts.scan_secrets.supports_color", return_value=False):
+        assert color("hello", RED) == "hello"
