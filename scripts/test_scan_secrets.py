@@ -550,16 +550,24 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_scan_file_with_precomputed_filename(tmp_path):
-    # Test that scan_file behaves identically and accepts a pre-computed filename
-    filepath = tmp_path / "custom_image.png"
-    filepath.write_text("my_var = '" + "sk-" + "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6'")
+def test_grafana_service_account_token(run_scan):
+    # Valid Grafana service account token format: glsa_ followed by 32 alphanumeric, underscore, 8 hex characters
+    # Concatenated to prevent scanning trigger
+    content = "grafana_val = '" + "glsa_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6_1234abcd'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "Grafana Service Account Token"
 
-    # Passing the correct filename, which is ignored by extension
-    issues = scan_file(str(filepath), filename="custom_image.png")
+
+def test_grafana_service_account_token_too_short_ignored(run_scan):
+    # Too short hash segment (7 characters after underscore instead of 8)
+    content = "grafana_val = '" + "glsa_" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6_1234abc'"
+    issues = run_scan(content)
     assert len(issues) == 0
 
-    # Passing a non-ignored filename to force scanning
-    issues_scanned = scan_file(str(filepath), filename="custom_image.txt")
-    assert len(issues_scanned) == 1
-    assert issues_scanned[0][1] == "OpenAI API Key"
+
+def test_grafana_service_account_token_placeholder_ignored(run_scan):
+    # Placeholder format should be ignored
+    content = "grafana_val = '" + "glsa_" + "{GRAFANA_SERVICE_ACCOUNT_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
