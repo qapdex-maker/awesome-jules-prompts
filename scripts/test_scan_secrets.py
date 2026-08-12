@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
-from scripts.scan_secrets import scan_file, PATTERNS, supports_color, color, RED
+from scripts.scan_secrets import scan_file, PATTERNS, supports_color
 
 
 def create_temp_file(content):
