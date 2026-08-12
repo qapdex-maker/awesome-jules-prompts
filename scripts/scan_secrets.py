@@ -3,6 +3,41 @@ import os
 import re
 import sys
 
+# Color Support Checks & ANSI Escape Codes for UX/DX Polish
+RED = "\033[1;31m"
+GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+CYAN = "\033[1;36m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+
+def supports_color():
+    """
+    Returns True if the stdout supports color, False otherwise.
+    Gracefully degrades to False if not in a TTY, if NO_COLOR is set,
+    or if TERM is set to 'dumb'.
+    """
+    if os.environ.get("FORCE_COLOR"):
+        return True
+    if os.environ.get("NO_COLOR"):
+        return False
+    if not sys.stdout.isatty():
+        return False
+    if os.environ.get("TERM") == "dumb":
+        return False
+    return True
+
+
+def color(text, code):
+    """
+    Wraps text in ANSI color escape codes if color is supported.
+    """
+    if supports_color():
+        return f"{code}{text}{RESET}"
+    return text
+
+
 # ⚡ Bolt: Pre-compile regex patterns for better performance
 # Optimization: Converting 'Generic Token' regex from using the slow global case-insensitive (?i) flag
 # to explicit character classes for the keywords (e.g. [sS][eE][cC][rR][eE][tT]) yields a ~34% speedup
@@ -404,23 +439,25 @@ def main():
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True
-                print(f"⚠️ Potential Secret Leak in {filepath}:")
+                print(color(f"⚠️ Potential Secret Leak in {filepath}:", RED))
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {label} - {line[:60]}...")
+                    print(f"  {color('Line ' + str(line_no), BOLD)}: {color(label, CYAN)} - {line[:60]}...")
     if failed:
-        print("\n" + "=" * 60)
-        print("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:")
-        print("=" * 60)
-        print("1. Documentation/Examples: Use placeholder format with curly braces.")
-        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
+        border = color("=" * 60, RED)
+        header = color("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", BOLD)
+        print(f"\n{border}")
+        print(header)
+        print(border)
+        print(f"{color('1. Documentation/Examples:', CYAN)} Use placeholder format with curly braces.")
+        print("   • Change 'sk-proj-abc...' to '{}'".format(color("sk-{OPENAI_API_KEY}", YELLOW)))
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print("\n2. Code/Configuration: Store credentials in environment variables.")
-        print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print("\n3. Verify your fixes by running the scanner locally:")
-        print("   • Run: python3 scripts/scan_secrets.py")
-        print("=" * 60 + "\n")
+        print(f"\n{color('2. Code/Configuration:', CYAN)} Store credentials in environment variables.")
+        print("   • Use {} instead of hardcoding keys.".format(color("os.environ.get('API_KEY')", YELLOW)))
+        print(f"\n{color('3. Verify your fixes by running the scanner locally:', CYAN)}")
+        print("   • Run: {}".format(color("python3 scripts/scan_secrets.py", BOLD)))
+        print(border + "\n")
         sys.exit(1)
-    print("✅ No potential secrets detected.")
+    print(color("✅ No potential secrets detected.", GREEN))
 
 
 if __name__ == "__main__":
