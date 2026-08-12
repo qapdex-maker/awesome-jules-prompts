@@ -179,3 +179,11 @@ and verify coverage using concatenated test assertions.
 **Learning:** Unlike other developer secrets with constant prefixes (e.g., `sk-` or `ghp_`), Discord Bot Tokens consist of three distinct base64/URL-safe segments separated by dots (user ID, timestamp, and signature). Their variable-length segments (specifically 27-45 characters for HMAC signature) make them prone to bypassing simple generic scanners.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
+
+## 2026-08-05 - [DigitalOcean and Grafana Token Scanning]
+
+**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) and Grafana Service Account Tokens, leading to potential credentials leakage.
+
+**Learning:** When scanning for exact-length hexadecimal payloads (like DigitalOcean's 64-character tokens), using lookaheads (e.g., `(?![a-fA-F0-9])`) prevents matching longer hex strings, but will still succeed on a substring of a longer string if the trailing character is non-hex (e.g., matching a 64-char block inside a 65-char string ending with 'g'). This is because the engine successfully matches the 64 hex characters, and the lookahead checks that the 65th character ('g') is not hex, which is true.
+
+**Prevention:** Use precise negative lookaheads and boundary/lookbehind patterns, and ensure test assertions for length limits explicitly test both characters in and out of the match class (such as trailing hex characters) to ensure the pattern is robust.
