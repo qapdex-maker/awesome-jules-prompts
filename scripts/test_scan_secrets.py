@@ -590,50 +590,26 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_supports_color_no_color_env(monkeypatch):
-    import scripts.scan_secrets as ss
+def test_supports_color(monkeypatch):
+    from scripts.scan_secrets import supports_color
+    import sys
+
+    # Test when NO_COLOR is set
     monkeypatch.setenv("NO_COLOR", "1")
-    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
-    assert ss.supports_color() is False
+    assert supports_color() is False
 
-
-def test_supports_color_term_dumb(monkeypatch):
-    import scripts.scan_secrets as ss
+    # Clear NO_COLOR
     monkeypatch.delenv("NO_COLOR", raising=False)
+
+    # Test when TERM is dumb
     monkeypatch.setenv("TERM", "dumb")
-    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
-    assert ss.supports_color() is False
+    assert supports_color() is False
 
-
-def test_supports_color_not_tty(monkeypatch):
-    import scripts.scan_secrets as ss
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    monkeypatch.delenv("TERM", raising=False)
-    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: False)
-    assert ss.supports_color() is False
-
-
-def test_supports_color_success(monkeypatch):
-    import scripts.scan_secrets as ss
-    monkeypatch.delenv("NO_COLOR", raising=False)
+    # Test when stdout is not a tty
     monkeypatch.setenv("TERM", "xterm-256color")
-    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
-    assert ss.supports_color() is True
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
+    assert supports_color() is False
 
-
-def test_get_colors_with_color(monkeypatch):
-    import scripts.scan_secrets as ss
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    monkeypatch.setenv("TERM", "xterm-256color")
-    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
-    colors = ss.get_colors()
-    assert colors["RED"] == "\033[91m"
-    assert colors["GREEN"] == "\033[92m"
-
-
-def test_get_colors_no_color(monkeypatch):
-    import scripts.scan_secrets as ss
-    monkeypatch.setenv("NO_COLOR", "1")
-    colors = ss.get_colors()
-    assert colors["RED"] == ""
-    assert colors["GREEN"] == ""
+    # Test when stdout is a tty, TERM is not dumb, and NO_COLOR is not set
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    assert supports_color() is True
