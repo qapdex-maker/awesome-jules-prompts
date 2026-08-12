@@ -590,53 +590,50 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_supports_color_no_tty(monkeypatch):
-    import sys
-    from scripts.scan_secrets import supports_color
-
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
-    assert supports_color() is False
-
-
-def test_supports_color_with_no_color_env(monkeypatch):
-    import sys
-    from scripts.scan_secrets import supports_color
-
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+def test_supports_color_no_color_env(monkeypatch):
+    import scripts.scan_secrets as ss
     monkeypatch.setenv("NO_COLOR", "1")
-    monkeypatch.setenv("TERM", "xterm-256color")
-    assert supports_color() is False
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    assert ss.supports_color() is False
 
 
-def test_supports_color_with_dumb_term(monkeypatch):
-    import sys
-    from scripts.scan_secrets import supports_color
-
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
-    if "NO_COLOR" in os.environ:
-        monkeypatch.delenv("NO_COLOR")
+def test_supports_color_term_dumb(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
     monkeypatch.setenv("TERM", "dumb")
-    assert supports_color() is False
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    assert ss.supports_color() is False
 
 
-def test_supports_color_enabled(monkeypatch):
-    import sys
-    from scripts.scan_secrets import supports_color
+def test_supports_color_not_tty(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.delenv("TERM", raising=False)
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: False)
+    assert ss.supports_color() is False
 
-    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
-    if "NO_COLOR" in os.environ:
-        monkeypatch.delenv("NO_COLOR")
+
+def test_supports_color_success(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
     monkeypatch.setenv("TERM", "xterm-256color")
-    assert supports_color() is True
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    assert ss.supports_color() is True
 
 
-def test_colorize_formatting(monkeypatch):
-    from scripts.scan_secrets import colorize, RED
+def test_get_colors_with_color(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    colors = ss.get_colors()
+    assert colors["RED"] == "\033[91m"
+    assert colors["GREEN"] == "\033[92m"
 
-    # Test when color is disabled
-    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: False)
-    assert colorize("test_str", RED) == "test_str"
 
-    # Test when color is enabled
-    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: True)
-    assert colorize("test_str", RED) == f"{RED}test_str\033[0m"
+def test_get_colors_no_color(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.setenv("NO_COLOR", "1")
+    colors = ss.get_colors()
+    assert colors["RED"] == ""
+    assert colors["GREEN"] == ""
