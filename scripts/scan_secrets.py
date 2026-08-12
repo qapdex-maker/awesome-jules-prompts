@@ -3,39 +3,36 @@ import os
 import re
 import sys
 
-# Color Support Checks & ANSI Escape Codes for UX/DX Polish
-RED = "\033[1;31m"
-GREEN = "\033[1;32m"
-YELLOW = "\033[1;33m"
-CYAN = "\033[1;36m"
-BOLD = "\033[1m"
-RESET = "\033[0m"
-
 
 def supports_color():
     """
-    Returns True if the stdout supports color, False otherwise.
-    Gracefully degrades to False if not in a TTY, if NO_COLOR is set,
-    or if TERM is set to 'dumb'.
+    Returns True if the running system's stdout supports color, False otherwise.
     """
-    if os.environ.get("FORCE_COLOR"):
-        return True
-    if os.environ.get("NO_COLOR"):
+    if "NO_COLOR" in os.environ:
         return False
-    if not sys.stdout.isatty():
+    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
         return False
     if os.environ.get("TERM") == "dumb":
         return False
     return True
 
 
-def color(text, code):
-    """
-    Wraps text in ANSI color escape codes if color is supported.
-    """
-    if supports_color():
-        return f"{code}{text}{RESET}"
-    return text
+if supports_color():
+    COLOR_RED = "\033[1;31m"
+    COLOR_GREEN = "\033[1;32m"
+    COLOR_YELLOW = "\033[1;33m"
+    COLOR_CYAN = "\033[1;36m"
+    COLOR_BOLD = "\033[1m"
+    COLOR_DIM = "\033[2m"
+    COLOR_RESET = "\033[0m"
+else:
+    COLOR_RED = ""
+    COLOR_GREEN = ""
+    COLOR_YELLOW = ""
+    COLOR_CYAN = ""
+    COLOR_BOLD = ""
+    COLOR_DIM = ""
+    COLOR_RESET = ""
 
 
 # ⚡ Bolt: Pre-compile regex patterns for better performance
@@ -463,25 +460,26 @@ def main():
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True
-                print(color(f"⚠️ Potential Secret Leak in {filepath}:", RED))
+                print(f"{COLOR_YELLOW}⚠️  Potential Secret Leak in {COLOR_RED}{filepath}{COLOR_YELLOW}:{COLOR_RESET}")
                 for line_no, label, line in issues:
-                    print(f"  {color('Line ' + str(line_no), BOLD)}: {color(label, CYAN)} - {line[:60]}...")
+                    truncated_line = line[:60]
+                    if "[REDACTED]" in truncated_line:
+                        truncated_line = truncated_line.replace("[REDACTED]", f"{COLOR_RED}[REDACTED]{COLOR_RESET}")
+                    print(f"  Line {COLOR_CYAN}{line_no}{COLOR_RESET}: {COLOR_BOLD}{label}{COLOR_RESET} - {truncated_line}...")
     if failed:
-        border = color("=" * 60, RED)
-        header = color("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", BOLD)
-        print(f"\n{border}")
-        print(header)
-        print(border)
-        print(f"{color('1. Documentation/Examples:', CYAN)} Use placeholder format with curly braces.")
-        print("   • Change 'sk-proj-abc...' to '{}'".format(color("sk-{OPENAI_API_KEY}", YELLOW)))
+        print("\n" + COLOR_RED + "=" * 60 + COLOR_RESET)
+        print(f"{COLOR_YELLOW}💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:{COLOR_RESET}")
+        print(COLOR_RED + "=" * 60 + COLOR_RESET)
+        print(f"{COLOR_BOLD}1. Documentation/Examples:{COLOR_RESET} Use placeholder format with curly braces.")
+        print(f"   • Change {COLOR_DIM}'sk-proj-abc...'{COLOR_RESET} to {COLOR_GREEN}'sk-{{OPENAI_API_KEY}}'{COLOR_RESET}")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print(f"\n{color('2. Code/Configuration:', CYAN)} Store credentials in environment variables.")
-        print("   • Use {} instead of hardcoding keys.".format(color("os.environ.get('API_KEY')", YELLOW)))
-        print(f"\n{color('3. Verify your fixes by running the scanner locally:', CYAN)}")
-        print("   • Run: {}".format(color("python3 scripts/scan_secrets.py", BOLD)))
-        print(border + "\n")
+        print(f"\n{COLOR_BOLD}2. Code/Configuration:{COLOR_RESET} Store credentials in environment variables.")
+        print(f"   • Use {COLOR_CYAN}os.environ.get('API_KEY'){COLOR_RESET} instead of hardcoding keys.")
+        print(f"\n{COLOR_BOLD}3. Verify your fixes by running the scanner locally:{COLOR_RESET}")
+        print(f"   • Run: {COLOR_CYAN}python3 scripts/scan_secrets.py{COLOR_RESET}")
+        print(COLOR_RED + "=" * 60 + COLOR_RESET + "\n")
         sys.exit(1)
-    print(color("✅ No potential secrets detected.", GREEN))
+    print(f"{COLOR_GREEN}✅ No potential secrets detected.{COLOR_RESET}")
 
 
 if __name__ == "__main__":
