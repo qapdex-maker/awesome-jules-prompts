@@ -197,20 +197,15 @@ PREFIX_MAPPING = {}
 for name, cp in PATTERNS.items():
     pfxs, ci = extract_prefixes_robust(cp)
     if pfxs:
-        PREFIX_MAPPING[name] = ([pfx.encode("utf-8") for pfx in pfxs], ci)
+        PREFIX_MAPPING[name] = (pfxs, ci)
 
-# ⚡ Bolt: Highly selective bytes-based pre-filter pattern for the 'Discord Token' rule.
-# This avoids an always-evaluate fallback state, allowing the scanner to safely early-return on clean files
-# without triggering UTF-8 string decoding, resulting in an additional ~64.5% overall scanning speedup.
-PREFIX_MAPPING["Discord Token"] = (
-    [b"{DISCORD_TOKEN}", b"{DISCORD_BOT_TOKEN}"],
-    True
-)
-
-# ⚡ Bolt: Pre-compile a unified, high-performance scanning pipeline operating directly on bytes.
-# By combining patterns, bytes-based prefix information, and pre-compiled case-insensitive bytes regexes into a
-# static list of tuples (PIPELINE) at module level, we completely bypass dictionary lookups and UTF-8 decoding
-# in the file scanning hot path, significantly boosting iteration efficiency and scanning speed.
+# ⚡ Bolt: Pre-compile a unified, high-performance scanning pipeline.
+# By combining patterns, prefix information, and pre-compiled case-insensitive bytes regexes into a static list of tuples (PIPELINE) at module level,
+# we completely bypass dictionary lookups, .items() dictionary instantiations, and membership checks
+# during the per-file scanning hot path, significantly boosting iteration efficiency and scanning speed.
+# Optimization: Converting candidate prefixes to bytes and pre-compiling the case-insensitive patterns as bytes regexes
+# allows prefix matching to run directly on the raw file bytes, completely bypassing UTF-8 string decoding
+# for all clean files in the repository.
 PIPELINE = []
 for name, cp in PATTERNS.items():
     if name == "Discord Token":
@@ -221,13 +216,11 @@ for name, cp in PATTERNS.items():
         BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
     elif name in PREFIX_MAPPING:
         pfxs, ci = PREFIX_MAPPING[name]
-        if name == "Discord Token":
-            ci_regex = re.compile(rb"\.[a-zA-Z0-9_+\/\-]{6}\.")
-            PIPELINE.append((name, cp, pfxs, ci, ci_regex))
-        elif ci:
-            # Pre-compile a fast case-insensitive bytes-based regex pattern for those prefixes that require CI checking
-            ci_regex = re.compile(rb"(?i)" + rb"|".join(re.escape(pfx) for pfx in pfxs))
-            PIPELINE.append((name, cp, pfxs, ci, ci_regex))
+        pfxs_bytes = [pfx.encode("utf-8") for pfx in pfxs]
+        if ci:
+            # Pre-compile a fast case-insensitive bytes regex pattern for those prefixes that require CI checking
+            ci_regex = re.compile(b"(?i)" + b"|".join(re.escape(pfx) for pfx in pfxs_bytes))
+            PIPELINE.append((name, cp, pfxs_bytes, ci, ci_regex))
         else:
             PIPELINE.append((name, cp, pfxs_bytes, ci, None))
     else:
@@ -365,7 +358,9 @@ def scan_file(filepath, filename=None):
         # for clean files, yielding a highly optimized speedup.
         # Iterating over a pre-compiled list of tuples directly and avoiding dictionary allocation/lookups
         # eliminates dictionary overhead in the file scanning loop, yielding a cleaner and even faster hot path.
-        # Using a pre-compiled case-insensitive regex search on bytes yields a massive speedup on large files.
+        # Optimization: We execute the prefix matching and the pre-compiled case-insensitive regex checks
+        # directly on the raw file bytes (raw_content). This completely bypasses the expensive UTF-8 string
+        # decoding and memory allocation on all clean files, delivering an incredible speedup for repository scans.
         active_patterns = []
         for name, cp, pfxs_bytes, ci, ci_regex_bytes in PIPELINE:
             if pfxs_bytes is None:
@@ -373,7 +368,7 @@ def scan_file(filepath, filename=None):
                 active_patterns.append((name, cp))
                 continue
 
-            # Fast case-sensitive check on raw bytes using a simple loop
+            # Fast case-sensitive check using a simple loop on raw bytes
             matched = False
             for pfx in pfxs:
                 if pfx in raw_content:
@@ -383,15 +378,14 @@ def scan_file(filepath, filename=None):
                 active_patterns.append((name, cp))
                 continue
 
-            # Case-insensitive check on raw bytes using highly optimized pre-compiled regex search
+            # Case-insensitive check using highly optimized pre-compiled bytes regex search (bypassing content decoding)
             if ci and ci_regex.search(raw_content):
                 active_patterns.append((name, cp))
 
         if not active_patterns:
             return found_issues
 
-        # ⚡ Bolt: Only decode the file content to UTF-8 when active matching patterns have been identified.
-        # This prevents any string decoding and allocation cost for clean files.
+        # Only decode the raw content to a UTF-8 string if active patterns are actually present.
         content = raw_content.decode("utf-8", errors="ignore")
 
         # ⚡ Bolt: Detailed whole-file scanning directly on active patterns.
