@@ -211,7 +211,7 @@ for name, cp in PATTERNS.items():
         # It checks for either the bracketed placeholder b"{DISCORD_" or matches the dot-separated signature format using a fast bytes regex.
         pfxs_bytes = [b"{DISCORD_"]
         ci_regex_bytes = re.compile(b"\\.[a-zA-Z0-9_+\\/\\-]{6}\\.")
-        BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
+        PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
     elif name in PREFIX_MAPPING:
         pfxs, ci = PREFIX_MAPPING[name]
         pfxs_bytes = [pfx.encode("utf-8") for pfx in pfxs]
@@ -224,7 +224,7 @@ for name, cp in PATTERNS.items():
         else:
             PIPELINE.append((name, cp, pfxs_bytes, ci, None))
     else:
-        PIPELINE.append((name, cp, None, False, None, None))
+        PIPELINE.append((name, cp, None, False, None))
 
 # ⚡ Bolt: Global ignore lists for fast-path skipping of binary, lock, and huge files.
 # Checking filenames and extensions is done in pure Python string logic and completely
