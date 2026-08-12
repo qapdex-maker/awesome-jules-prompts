@@ -180,10 +180,10 @@ and verify coverage using concatenated test assertions.
 
 **Prevention:** Define a high-fidelity `Discord Token` scanning pattern mapping the specific base64/URL-safe structure and segment lengths with proper word boundary controls, while exempting curly-braced template placeholders and verifying coverage with robust concatenated test assertions.
 
-## 2026-08-06 - [DigitalOcean Token Leakage Prevention]
+## 2026-08-05 - [DigitalOcean Token Leakage Prevention]
 
-**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) could lead to contributors accidentally committing live DigitalOcean credentials when sharing examples or code configurations.
+**Vulnerability:** Lack of secret scanner pattern coverage for DigitalOcean Personal Access Tokens (PATs) could lead to contributors accidentally committing live DigitalOcean tokens when sharing prompt examples or configurations.
 
-**Learning:** DigitalOcean Personal Access Tokens have a modern, structured format starting with the prefix `dop_v1_` followed by exactly 64 hexadecimal characters. Generic scanning rules might miss these specialized API keys unless precise prefix patterns, exact length constraints, and word boundaries are explicitly configured and tested.
+**Learning:** DigitalOcean Personal Access Tokens have a structured prefix (`dop_v1_`) followed by exactly 64 hexadecimal characters. Generic scanners can miss these high-entropy patterns without prefix-specific regexes and exact length-bound/character lookahead enforcements.
 
-**Prevention:** Define a dedicated `DigitalOcean Token` rule that matches prefixes like `dop_v1_` followed by exactly 64 hexadecimal characters, employs negative lookaheads to prevent partial/invalid matches, exempts curly-braced placeholders, and verify coverage with robust unit tests.
+**Prevention:** Define a dedicated `DigitalOcean Token` scanning pattern matching `dop_v1_` followed by exactly 64 hexadecimal characters, use negative lookaheads to prevent partial or oversized matching, exempt bracketed placeholders, and verify with robust test assertions.
