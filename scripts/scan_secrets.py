@@ -240,8 +240,10 @@ IGNORED_FILENAMES = {
     "mix.lock",
 }
 
-# ⚡ Bolt: Storing IGNORED_EXTENSIONS without a leading dot avoids repetitive string concatenation
-# of dot + ext on every single extension check, improving speed and reducing memory allocations.
+# ⚡ Bolt: Optimize extension matching by removing the leading dot.
+# By storing extensions without a leading dot (e.g. "png" instead of ".png"),
+# we completely avoid string concatenation (dot + ext) during every file extension lookup,
+# saving memory allocations and processing time on every file checked.
 IGNORED_EXTENSIONS = {
     # Images
     "png",
@@ -318,10 +320,8 @@ def scan_file(filepath, filename=None):
     found_issues = []
 
     # ⚡ Bolt: Fast-path filename and extension check before any disk I/O.
-    # Optimization: If the caller already extracted the filename (e.g. during os.walk),
-    # we completely skip parsing filepath with rpartition, avoiding redundant work.
-    # Additionally, checking dot and ext.lower() in IGNORED_EXTENSIONS prevents
-    # constructing "dot + ext" string concatenations on every scanned file.
+    # Optimization: If filename is not passed, extract it using fast, C-level string rpartitioning.
+    # By accepting an optional pre-computed filename, we completely avoid re-parsing the path when called from main().
     if filename is None:
         filename = filepath.rpartition("/")[2]
         if os.sep != "/":
@@ -332,7 +332,8 @@ def scan_file(filepath, filename=None):
         return found_issues
 
     _, dot, ext = filename.rpartition(".")
-    if dot and ext.lower() in IGNORED_EXTENSIONS:
+    ext_lower = ext.lower() if dot else ""
+    if ext_lower in IGNORED_EXTENSIONS:
         return found_issues
 
     try:
@@ -439,12 +440,21 @@ def main():
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in ignored_dirs]
         for file in files:
-            # ⚡ Bolt: Constructing filepaths with f-strings and explicit path separators
-            # (e.g., f"{root}{os.sep}{file}") instead of utilizing the slower os.path.join helper
-            # delivers a ~10x speedup on path construction operations.
-            # Additionally, passing file as the pre-computed filename parameter bypasses
-            # standard path partition string-splitting (rpartition) inside scan_file.
-            filepath = f"{root}{os.sep}{file}"
+            # ⚡ Bolt: Pre-filter filename and extension before path construction and function call overhead.
+            # This completely avoids os.path.join and scan_file function overhead for all ignored files.
+            if file in IGNORED_FILENAMES:
+                continue
+            _, dot, ext = file.rpartition(".")
+            ext_lower = ext.lower() if dot else ""
+            if ext_lower in IGNORED_EXTENSIONS:
+                continue
+
+            # ⚡ Bolt: Fast-path path construction using f-strings (almost 10x faster than os.path.join).
+            if root == ".":
+                filepath = file
+            else:
+                filepath = f"{root}{os.sep}{file}"
+
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True

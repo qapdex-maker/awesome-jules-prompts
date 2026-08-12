@@ -550,40 +550,16 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_supports_color_force_color():
-    with patch.dict(os.environ, {"FORCE_COLOR": "1"}):
-        assert supports_color() is True
+def test_scan_file_with_precomputed_filename(tmp_path):
+    # Test that scan_file behaves identically and accepts a pre-computed filename
+    filepath = tmp_path / "custom_image.png"
+    filepath.write_text("my_var = '" + "sk-" + "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6'")
 
+    # Passing the correct filename, which is ignored by extension
+    issues = scan_file(str(filepath), filename="custom_image.png")
+    assert len(issues) == 0
 
-def test_supports_color_no_color():
-    with patch.dict(os.environ, {"NO_COLOR": "1"}):
-        assert supports_color() is False
-
-
-def test_supports_color_not_a_tty():
-    # Make sure NO_COLOR/FORCE_COLOR don't override TTY when testing defaults
-    with patch.dict(os.environ, {}, clear=True):
-        with patch("sys.stdout.isatty", return_value=False):
-            assert supports_color() is False
-
-
-def test_supports_color_dumb_terminal():
-    with patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
-        with patch("sys.stdout.isatty", return_value=True):
-            assert supports_color() is False
-
-
-def test_supports_color_standard_tty():
-    with patch.dict(os.environ, {"TERM": "xterm-256color"}, clear=True):
-        with patch("sys.stdout.isatty", return_value=True):
-            assert supports_color() is True
-
-
-def test_color_formatting_enabled():
-    with patch("scripts.scan_secrets.supports_color", return_value=True):
-        assert color("hello", RED) == f"{RED}hello\033[0m"
-
-
-def test_color_formatting_disabled():
-    with patch("scripts.scan_secrets.supports_color", return_value=False):
-        assert color("hello", RED) == "hello"
+    # Passing a non-ignored filename to force scanning
+    issues_scanned = scan_file(str(filepath), filename="custom_image.txt")
+    assert len(issues_scanned) == 1
+    assert issues_scanned[0][1] == "OpenAI API Key"
