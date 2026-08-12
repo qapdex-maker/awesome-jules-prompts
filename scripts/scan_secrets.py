@@ -3,6 +3,41 @@ import os
 import re
 import sys
 
+# Color Support Checks & ANSI Escape Codes for UX/DX Polish
+RED = "\033[1;31m"
+GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+CYAN = "\033[1;36m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+
+def supports_color():
+    """
+    Returns True if the stdout supports color, False otherwise.
+    Gracefully degrades to False if not in a TTY, if NO_COLOR is set,
+    or if TERM is set to 'dumb'.
+    """
+    if os.environ.get("FORCE_COLOR"):
+        return True
+    if os.environ.get("NO_COLOR"):
+        return False
+    if not sys.stdout.isatty():
+        return False
+    if os.environ.get("TERM") == "dumb":
+        return False
+    return True
+
+
+def color(text, code):
+    """
+    Wraps text in ANSI color escape codes if color is supported.
+    """
+    if supports_color():
+        return f"{code}{text}{RESET}"
+    return text
+
+
 # ⚡ Bolt: Pre-compile regex patterns for better performance
 # Optimization: Converting 'Generic Token' regex from using the slow global case-insensitive (?i) flag
 # to explicit character classes for the keywords (e.g. [sS][eE][cC][rR][eE][tT]) yields a ~34% speedup
@@ -40,9 +75,14 @@ PATTERNS = {
     ),
     "Groq API Key": re.compile(r"gsk_(?:[a-zA-Z0-9_]{52,}|\{[a-zA-Z0-9_\-]+\})"),
     "Replicate API Token": re.compile(r"r8_(?:[a-zA-Z0-9_]{37,}|\{[a-zA-Z0-9_\-]+\})"),
-    "NPM Token": re.compile(r"npm_(?:[a-zA-Z0-9]{36}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"),
+    "NPM Token": re.compile(
+        r"npm_(?:[a-zA-Z0-9]{36}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"
+    ),
     "Sentry Token": re.compile(
         r"sntry(?:u_[a-fA-F0-9]{64}(?![a-fA-F0-9])|s_[a-zA-Z0-9_+\/-]{40,}(?![a-zA-Z0-9_+\/-])|\{[a-zA-Z0-9_\-]+\})"
+    ),
+    "DigitalOcean Token": re.compile(
+        r"dop_v1_(?:[a-fA-F0-9]{64}(?![a-fA-F0-9])|\{[a-zA-Z0-9_\-]+\})"
     ),
     "PyPI Token": re.compile(
         r"pypi-(?:[a-zA-Z0-9_\-]{85,}(?![a-zA-Z0-9_\-])|\{[a-zA-Z0-9_\-]+\})"
@@ -159,21 +199,32 @@ for name, cp in PATTERNS.items():
         PREFIX_MAPPING[name] = (pfxs, ci)
 
 # ⚡ Bolt: Pre-compile a unified, high-performance scanning pipeline.
-# By combining patterns, prefix information, and pre-compiled case-insensitive regexes into a static list of tuples (PIPELINE) at module level,
+# By combining patterns, prefix information, and pre-compiled case-insensitive regexes as bytes patterns into a static list of tuples (PIPELINE) at module level,
 # we completely bypass dictionary lookups, .items() dictionary instantiations, and membership checks
 # during the per-file scanning hot path, significantly boosting iteration efficiency and scanning speed.
+# Optimization: Storing and checking bytes-based prefixes and case-insensitive compiled bytes regexes allows us to pre-filter
+# file contents entirely in raw binary mode, skipping expensive string decodings and allocations on clean files.
 PIPELINE = []
 for name, cp in PATTERNS.items():
-    if name in PREFIX_MAPPING:
+    if name == "Discord Token":
+        # ⚡ Bolt: Custom highly selective bytes-based pre-filter pattern for Discord Token to avoid always-evaluate fallback.
+        # It checks for either the bracketed placeholder b"{DISCORD_" or matches the dot-separated signature format using a fast bytes regex.
+        pfxs_bytes = [b"{DISCORD_"]
+        ci_regex_bytes = re.compile(b"\\.[a-zA-Z0-9_+\\/\\-]{6}\\.")
+        BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
+    elif name in PREFIX_MAPPING:
         pfxs, ci = PREFIX_MAPPING[name]
+        pfxs_bytes = [pfx.encode("utf-8") for pfx in pfxs]
         if ci:
-            # Pre-compile a fast case-insensitive regex pattern for those prefixes that require CI checking
-            ci_regex = re.compile(r"(?i)" + "|".join(re.escape(pfx) for pfx in pfxs))
-            PIPELINE.append((name, cp, pfxs, ci, ci_regex))
+            # Pre-compile a fast case-insensitive bytes-based regex pattern for those prefixes that require CI checking
+            ci_regex_bytes = re.compile(
+                b"(?i)" + b"|".join(re.escape(pfx.encode("utf-8")) for pfx in pfxs)
+            )
+            PIPELINE.append((name, cp, pfxs_bytes, ci, ci_regex_bytes))
         else:
-            PIPELINE.append((name, cp, pfxs, ci, None))
+            PIPELINE.append((name, cp, pfxs_bytes, ci, None))
     else:
-        PIPELINE.append((name, cp, None, False, None))
+        PIPELINE.append((name, cp, None, False, None, None))
 
 # ⚡ Bolt: Global ignore lists for fast-path skipping of binary, lock, and huge files.
 # Checking filenames and extensions is done in pure Python string logic and completely
@@ -301,39 +352,39 @@ def scan_file(filepath, filename=None):
         # ⚡ Bolt: Check for null bytes to filter out binary files (e.g. executables).
         if b"\x00" in raw_content:
             return found_issues
-        content = raw_content.decode("utf-8", errors="ignore")
 
-        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering via the pre-compiled PIPELINE.
-        # This determines which regexes are active for the current file content.
-        # It completely avoids executing expensive, backtracking-prone regexes
+        # ⚡ Bolt: Dynamic, correct-by-construction prefix pre-filtering via the pre-compiled PIPELINE on raw_content (bytes).
+        # This determines which regexes are active for the current file content, executed completely in binary mode.
+        # It completely avoids executing expensive, backtracking-prone regexes or decoding file contents to UTF-8 strings
         # on files that don't even contain candidate prefix substrings.
-        # Optimization: Iterating over a pre-compiled list of tuples directly and avoiding dictionary allocation/lookups
-        # eliminates dictionary overhead in the file scanning loop, yielding a cleaner and even faster hot path.
-        # Optimization: Using a pre-compiled case-insensitive regex search instead of allocating and lowercasing
-        # the entire content via content.lower() yields a massive (~350x) speedup for case-insensitive checks on large files.
+        # Optimization: Iterating over a pre-compiled list of tuples with byte-based prefixes and case-insensitive compiled bytes regexes
+        # eliminates decoding and string allocations inside the file scanning loop, achieving a massive performance boost.
         active_patterns = []
-        for name, cp, pfxs, ci, ci_regex in PIPELINE:
-            if pfxs is None:
+        for name, cp, pfxs_bytes, ci, ci_regex_bytes in PIPELINE:
+            if pfxs_bytes is None:
                 # Safe fallback: if we couldn't parse the prefix, always evaluate
                 active_patterns.append((name, cp))
                 continue
 
-            # Fast case-sensitive check using a simple loop
+            # Fast case-sensitive check using a simple loop on bytes
             matched = False
-            for pfx in pfxs:
-                if pfx in content:
+            for pfx_b in pfxs_bytes:
+                if pfx_b in raw_content:
                     matched = True
                     break
             if matched:
                 active_patterns.append((name, cp))
                 continue
 
-            # Case-insensitive check using highly optimized pre-compiled regex search (bypassing content.lower())
-            if ci and ci_regex.search(content):
+            # Case-insensitive check using highly optimized pre-compiled bytes regex search
+            if ci and ci_regex_bytes.search(raw_content):
                 active_patterns.append((name, cp))
 
         if not active_patterns:
             return found_issues
+
+        # Only decode the raw bytes if we actually have active patterns!
+        content = raw_content.decode("utf-8", errors="ignore")
 
         # ⚡ Bolt: Detailed whole-file scanning directly on active patterns.
         # Scanning the whole content in one pass via finditer() directly is significantly faster
@@ -360,7 +411,7 @@ def scan_file(filepath, filename=None):
                 if line_end == -1:
                     line_end = len(content)
                 line_prefix = content[line_start:start_pos]
-                line_suffix = content[match.end():line_end]
+                line_suffix = content[match.end() : line_end]
                 line = line_prefix + "[REDACTED]" + line_suffix
                 found_issues.append((line_no, label, line.strip()))
 
@@ -407,23 +458,25 @@ def main():
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True
-                print(f"⚠️ Potential Secret Leak in {filepath}:")
+                print(color(f"⚠️ Potential Secret Leak in {filepath}:", RED))
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {label} - {line[:60]}...")
+                    print(f"  {color('Line ' + str(line_no), BOLD)}: {color(label, CYAN)} - {line[:60]}...")
     if failed:
-        print("\n" + "=" * 60)
-        print("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:")
-        print("=" * 60)
-        print("1. Documentation/Examples: Use placeholder format with curly braces.")
-        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
+        border = color("=" * 60, RED)
+        header = color("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", BOLD)
+        print(f"\n{border}")
+        print(header)
+        print(border)
+        print(f"{color('1. Documentation/Examples:', CYAN)} Use placeholder format with curly braces.")
+        print("   • Change 'sk-proj-abc...' to '{}'".format(color("sk-{OPENAI_API_KEY}", YELLOW)))
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print("\n2. Code/Configuration: Store credentials in environment variables.")
-        print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print("\n3. Verify your fixes by running the scanner locally:")
-        print("   • Run: python3 scripts/scan_secrets.py")
-        print("=" * 60 + "\n")
+        print(f"\n{color('2. Code/Configuration:', CYAN)} Store credentials in environment variables.")
+        print("   • Use {} instead of hardcoding keys.".format(color("os.environ.get('API_KEY')", YELLOW)))
+        print(f"\n{color('3. Verify your fixes by running the scanner locally:', CYAN)}")
+        print("   • Run: {}".format(color("python3 scripts/scan_secrets.py", BOLD)))
+        print(border + "\n")
         sys.exit(1)
-    print("✅ No potential secrets detected.")
+    print(color("✅ No potential secrets detected.", GREEN))
 
 
 if __name__ == "__main__":
