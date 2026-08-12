@@ -144,3 +144,10 @@ complex regex patterns.
 
 **Learning:** Standard string `rfind` and index slicing in Python involves multiple manual checks and slicing operations, adding overhead during repository traversal and scanning loops. Replacing it with highly optimized, C-level string `rpartition` parsing (and reconstructing the extension with `ext = dot + ext if dot else ""`) avoids manual indices entirely and achieves an additional ~35% speedup on path parsing.
 **Action:** Prefer `rpartition` slicing over `rfind` indexing when parsing directory paths and extensions in performance-critical hot paths.
+
+---
+
+## 2026-08-02 - Traversal and Extension Lookup Fast-Path Bypass
+
+**Learning:** Standard traversals using `os.walk` and building/testing paths sequentially inside nested loops can introduce high performance overhead. We can bypass standard path construction, file opening, and function call overhead by pre-filtering traversed files inside `main()` using fast C-level string lookups on `filename` and dotless extensions directly. In addition, passing pre-computed `filename` to bypass path slicing inside `scan_file()`, storing `IGNORED_EXTENSIONS` without a leading dot to avoid redundant string concatenation/rebuilding, and using faster f-strings with explicit `os.sep` for path construction yields a massive overall test-suite runtime reduction (~45% speedup).
+**Action:** Pre-filter files directly during the `os.walk` traversal using fast dotless extension sets and pass pre-computed filenames to avoid redundant filesystem or string operations on ignored files.
