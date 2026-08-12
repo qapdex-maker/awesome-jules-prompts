@@ -1,7 +1,8 @@
 import os
 import tempfile
 import pytest
-from scripts.scan_secrets import scan_file, PATTERNS
+from unittest.mock import patch, MagicMock
+from scripts.scan_secrets import scan_file, PATTERNS, supports_color, color, RED
 
 
 def create_temp_file(content):
@@ -429,6 +430,46 @@ def test_npm_token_too_long_ignored(run_scan):
 def test_npm_placeholder_ignored(run_scan):
     # Placeholder format: npm_{NPM_TOKEN}
     content = "val = '" + "npm_" + "{NPM_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_token(run_scan):
+    # DigitalOcean PAT format: dop_v1_ followed by exactly 64 hex characters
+    token_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "DigitalOcean Token"
+    assert token_part not in issues[0][2]
+
+
+def test_digitalocean_token_too_short_ignored(run_scan):
+    # 63 characters instead of 64 after dop_v1_
+    token_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_token_too_long_ignored(run_scan):
+    # 65 characters instead of 64 after dop_v1_
+    token_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f67"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_token_non_hex_ignored(run_scan):
+    # Non-hex characters in payload (e.g. g-z characters)
+    token_part = "dop_v1_" + "g1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_placeholder_ignored(run_scan):
+    content = "do_val = '" + "dop_v1_" + "{DIGITALOCEAN_TOKEN}'"
     issues = run_scan(content)
     assert len(issues) == 0
 
