@@ -82,8 +82,3 @@ links to maintain fluent cross-document navigation.
 
 **Learning:** When decorative emojis are included inside anchor link text (such as in header menus or Table of Contents links), screen readers will verbally read the emoji descriptors alongside the link labels. For instance, "Everyday Dev Tasks hammer and wrench, link". Wrapping these decorative emojis in `<span aria-hidden="true">` inside the link labels improves auditory focus and ensures screen readers only announce the clean semantic text of the link.
 **Action:** Always wrap decorative emojis inside HTML anchor tags with `<span aria-hidden="true">` to ensure a clean, uncluttered auditory navigation experience.
-
-## 2026-08-04 - [Colorized CLI Feedback & Env-Friendly Fallbacks]
-
-**Learning:** Adding colors to local developer tools and CLI scripts (like `scan_secrets.py`) dramatically improves developer scanning productivity by emphasizing critical issues and distinguishing success/error states at a single glance. However, terminal color codes can pollute build output in non-TTY, CI/CD runners, or minimal shell environments. A robust verification of stdout TTY presence, `NO_COLOR`, and 'dumb' terminal configurations ensures colorful outputs degrade gracefully to standard plaintext.
-**Action:** When implementing terminal colors, always verify environments (`isatty`, `NO_COLOR`, and `TERM`) first before outputting ANSI escape characters.
