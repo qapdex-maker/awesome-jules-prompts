@@ -590,33 +590,53 @@ def test_discord_placeholder_ignored(run_scan):
     assert len(issues_bot) == 0
 
 
-def test_supports_color(monkeypatch):
+def test_supports_color_no_tty(monkeypatch):
+    import sys
     from scripts.scan_secrets import supports_color
 
-    # Test when NO_COLOR is set
-    monkeypatch.setenv("NO_COLOR", "1")
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
     assert supports_color() is False
 
-    # Test when FORCE_COLOR is set
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    monkeypatch.setenv("FORCE_COLOR", "1")
-    assert supports_color() is True
 
-    # Test when TERM is "dumb"
-    monkeypatch.delenv("FORCE_COLOR", raising=False)
+def test_supports_color_with_no_color_env(monkeypatch):
+    import sys
+    from scripts.scan_secrets import supports_color
+
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    monkeypatch.setenv("NO_COLOR", "1")
+    monkeypatch.setenv("TERM", "xterm-256color")
+    assert supports_color() is False
+
+
+def test_supports_color_with_dumb_term(monkeypatch):
+    import sys
+    from scripts.scan_secrets import supports_color
+
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    if "NO_COLOR" in os.environ:
+        monkeypatch.delenv("NO_COLOR")
     monkeypatch.setenv("TERM", "dumb")
     assert supports_color() is False
 
 
-def test_colorize(monkeypatch):
-    from scripts.scan_secrets import colorize
+def test_supports_color_enabled(monkeypatch):
+    import sys
+    from scripts.scan_secrets import supports_color
 
-    # Mock supports_color to return True
-    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: True)
-    colored = colorize("Success", "1;32")
-    assert colored == "\033[1;32mSuccess\033[0m"
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    if "NO_COLOR" in os.environ:
+        monkeypatch.delenv("NO_COLOR")
+    monkeypatch.setenv("TERM", "xterm-256color")
+    assert supports_color() is True
 
-    # Mock supports_color to return False
+
+def test_colorize_formatting(monkeypatch):
+    from scripts.scan_secrets import colorize, RED
+
+    # Test when color is disabled
     monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: False)
-    plain = colorize("Success", "1;32")
-    assert plain == "Success"
+    assert colorize("test_str", RED) == "test_str"
+
+    # Test when color is enabled
+    monkeypatch.setattr("scripts.scan_secrets.supports_color", lambda: True)
+    assert colorize("test_str", RED) == f"{RED}test_str\033[0m"

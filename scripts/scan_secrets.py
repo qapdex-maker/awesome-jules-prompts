@@ -5,39 +5,25 @@ import sys
 
 
 def supports_color():
-    """
-    Returns True if the running system's stdout supports color.
-    Checks:
-    - NO_COLOR environment variable (if present, disable color).
-    - sys.stdout.isatty() (if not a TTY, disable color unless FORCE_COLOR is set).
-    - TERM environment variable (if 'dumb', disable color).
-    """
-    if "NO_COLOR" in os.environ:
-        return False
-    if "FORCE_COLOR" in os.environ:
-        return True
     if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
         return False
-    term = os.environ.get("TERM", "")
-    if term == "dumb":
+    if "NO_COLOR" in os.environ:
         return False
-    # Check for Windows platforms that support ANSI escape codes
-    if sys.platform == "win32":
-        if any(var in os.environ for var in ("ANSICON", "WT_SESSION", "COLORTERM")):
-            return True
-        if term in ("cygwin", "msys", "xterm", "xterm-256color"):
-            return True
-        return False
-    return True
+    return os.environ.get("TERM") != "dumb"
 
 
-def colorize(text, style_code):
-    """
-    Colorizes the text with the given ANSI style code if terminal supports color.
-    """
-    if supports_color():
-        return f"\033[{style_code}m{text}\033[0m"
-    return text
+# ANSI Escape Codes
+RED = "\033[31m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+BLUE = "\033[34m"
+CYAN = "\033[36m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+
+def colorize(text, color):
+    return f"{color}{text}{RESET}" if supports_color() else text
 
 
 # ⚡ Bolt: Pre-compile regex patterns for better performance
@@ -465,23 +451,28 @@ def main():
             issues = scan_file(filepath, filename=file)
             if issues:
                 failed = True
-                print(colorize(f"⚠️ Potential Secret Leak in {filepath}:", "1;31"))
+                print(colorize(f"⚠️  Potential Secret Leak in {filepath}:", BOLD + RED))
                 for line_no, label, line in issues:
-                    print(f"  Line {line_no}: {colorize(label, '1;33')} - {line[:60]}...")
+                    lbl_part = colorize(label, BOLD + CYAN)
+                    line_part = colorize(f"Line {line_no}", YELLOW)
+                    print(f"  {line_part}: {lbl_part} - {line[:60]}...")
     if failed:
-        print("\n" + colorize("=" * 60, "1;33"))
-        print(colorize("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", "1;33"))
-        print(colorize("=" * 60, "1;33"))
-        print(colorize("1. Documentation/Examples: Use placeholder format with curly braces.", "1"))
-        print("   • Change 'sk-proj-abc...' to 'sk-{OPENAI_API_KEY}'")
+        border = colorize("=" * 60, BLUE)
+        print("\n" + border)
+        print(colorize("💡 HOW TO RESOLVE THIS SECRET LEAK DETECTED:", BOLD + RED))
+        print(border)
+        print(colorize("1. Documentation/Examples:", BOLD + CYAN) + " Use placeholder format with curly braces.")
+        placeholder_example = colorize("'sk-{OPENAI_API_KEY}'", BOLD + GREEN)
+        print(f"   • Change 'sk-proj-abc...' to {placeholder_example}")
         print("   • Placeholders are completely safe and ignored by the scanner.")
-        print(colorize("\n2. Code/Configuration: Store credentials in environment variables.", "1"))
+        print("\n" + colorize("2. Code/Configuration:", BOLD + CYAN) + " Store credentials in environment variables.")
         print("   • Use os.environ.get('API_KEY') instead of hardcoding keys.")
-        print(colorize("\n3. Verify your fixes by running the scanner locally:", "1"))
-        print("   • Run: python3 scripts/scan_secrets.py")
-        print(colorize("=" * 60, "1;33") + "\n")
+        print("\n" + colorize("3. Verify your fixes by running the scanner locally:", BOLD + CYAN))
+        run_command = colorize("python3 scripts/scan_secrets.py", BOLD + GREEN)
+        print(f"   • Run: {run_command}")
+        print(border + "\n")
         sys.exit(1)
-    print(colorize("✅ No potential secrets detected.", "1;32"))
+    print(colorize("✅ No potential secrets detected.", BOLD + GREEN))
 
 
 if __name__ == "__main__":

@@ -83,7 +83,7 @@ links to maintain fluent cross-document navigation.
 **Learning:** When decorative emojis are included inside anchor link text (such as in header menus or Table of Contents links), screen readers will verbally read the emoji descriptors alongside the link labels. For instance, "Everyday Dev Tasks hammer and wrench, link". Wrapping these decorative emojis in `<span aria-hidden="true">` inside the link labels improves auditory focus and ensures screen readers only announce the clean semantic text of the link.
 **Action:** Always wrap decorative emojis inside HTML anchor tags with `<span aria-hidden="true">` to ensure a clean, uncluttered auditory navigation experience.
 
-## 2026-08-05 - [ANSI Terminal Color Support & Graceful Degradation in Developer CLI Tools]
+## 2026-08-04 - [Colorizing Terminal CLI Output for Security Scanners]
 
-**Learning:** Visual scannability of local developer tooling CLI outputs can be dramatically enhanced by introducing standard ANSI color highlighting (using distinct colors for success states, warning flags, line counts, and actionable commands). Ensuring that these highlights respect standard system conventions—such as evaluating `sys.stdout.isatty()`, the `NO_COLOR` standard, and `TERM="dumb"`—allows the user experience to degrade seamlessly to clean plaintext inside automated CI/CD logs or redirected pipes.
-**Action:** Always wrap CLI console enhancements in a robust `supports_color()` environment check to maintain clean formatting across all target runtimes.
+**Learning:** When building security scanners or automated developer tools, presenting potential leaks in bold/red and providing troubleshooting steps in distinct color borders improves error scannability and developer response time. Integrating a `supports_color()` system prevents polluting non-interactive logs with raw ANSI escape sequences.
+**Action:** When adding or modifying CLI scripts, implement a robust, testable `supports_color` utility that honors `NO_COLOR` and non-TTY execution before wrapping stdout with ANSI styling.
