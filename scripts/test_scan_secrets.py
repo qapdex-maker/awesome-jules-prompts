@@ -1,7 +1,8 @@
 import os
 import tempfile
 import pytest
-from scripts.scan_secrets import scan_file, PATTERNS
+from unittest.mock import patch, MagicMock
+from scripts.scan_secrets import scan_file, PATTERNS, supports_color, color, RED
 
 
 def create_temp_file(content):
@@ -433,6 +434,46 @@ def test_npm_placeholder_ignored(run_scan):
     assert len(issues) == 0
 
 
+def test_digitalocean_token(run_scan):
+    # DigitalOcean PAT format: dop_v1_ followed by exactly 64 hex characters
+    token_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 1
+    assert issues[0][1] == "DigitalOcean Token"
+    assert token_part not in issues[0][2]
+
+
+def test_digitalocean_token_too_short_ignored(run_scan):
+    # 63 characters instead of 64 after dop_v1_
+    token_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_token_too_long_ignored(run_scan):
+    # 65 characters instead of 64 after dop_v1_
+    token_part = "dop_v1_" + "a1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f67"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_token_non_hex_ignored(run_scan):
+    # Non-hex characters in payload (e.g. g-z characters)
+    token_part = "dop_v1_" + "g1b2c3d4e5f607182930a1b2c3d4e5f6a1b2c3d4e5f607182930a1b2c3d4e5f6"
+    content = f"do_val = '{token_part}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
+def test_digitalocean_placeholder_ignored(run_scan):
+    content = "do_val = '" + "dop_v1_" + "{DIGITALOCEAN_TOKEN}'"
+    issues = run_scan(content)
+    assert len(issues) == 0
+
+
 def test_secret_redaction_in_output(run_scan):
     # Test that the matched secret itself is redacted in the returned line text
     secret_part = "sk-" + "proj-abc123abc123abc123abc123abc123abc123abc123"
@@ -547,3 +588,52 @@ def test_discord_placeholder_ignored(run_scan):
     content_bot = "discord_val = '" + "{DISCORD_BOT_TOKEN}'"
     issues_bot = run_scan(content_bot)
     assert len(issues_bot) == 0
+
+
+def test_supports_color_no_color_env(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.setenv("NO_COLOR", "1")
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    assert ss.supports_color() is False
+
+
+def test_supports_color_term_dumb(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "dumb")
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    assert ss.supports_color() is False
+
+
+def test_supports_color_not_tty(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.delenv("TERM", raising=False)
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: False)
+    assert ss.supports_color() is False
+
+
+def test_supports_color_success(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    assert ss.supports_color() is True
+
+
+def test_get_colors_with_color(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setattr(ss.sys.stdout, "isatty", lambda: True)
+    colors = ss.get_colors()
+    assert colors["RED"] == "\033[91m"
+    assert colors["GREEN"] == "\033[92m"
+
+
+def test_get_colors_no_color(monkeypatch):
+    import scripts.scan_secrets as ss
+    monkeypatch.setenv("NO_COLOR", "1")
+    colors = ss.get_colors()
+    assert colors["RED"] == ""
+    assert colors["GREEN"] == ""
