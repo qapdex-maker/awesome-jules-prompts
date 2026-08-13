@@ -17,10 +17,12 @@ def supports_color():
     Returns True if the running terminal supports ANSI color escape codes,
     following standard conventions like NO_COLOR, TERM, and isatty checks.
     """
-    if os.environ.get("NO_COLOR"):
+    if "NO_COLOR" in os.environ:
         return False
-    if not sys.stdout.isatty():
+    # Check if stdout is a tty
+    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
         return False
+    # Check for TERM variable
     term = os.environ.get("TERM", "")
     if term in ("dumb", ""):
         return False
@@ -74,9 +76,6 @@ PATTERNS = {
     "Groq API Key": re.compile(r"gsk_(?:[a-zA-Z0-9_]{52,}|\{[a-zA-Z0-9_\-]+\})"),
     "Replicate API Token": re.compile(r"r8_(?:[a-zA-Z0-9_]{37,}|\{[a-zA-Z0-9_\-]+\})"),
     "NPM Token": re.compile(r"npm_(?:[a-zA-Z0-9]{36}(?![a-zA-Z0-9])|\{[a-zA-Z0-9_\-]+\})"),
-    "DigitalOcean Token": re.compile(
-        r"dop_v1_(?:[a-fA-F0-9]{64}(?![a-fA-F0-9])|\{[a-zA-Z0-9_\-]+\})"
-    ),
     "Sentry Token": re.compile(
         r"sntry(?:u_[a-fA-F0-9]{64}(?![a-fA-F0-9])|s_[a-zA-Z0-9_+\/-]{40,}(?![a-zA-Z0-9_+\/-])|\{[a-zA-Z0-9_\-]+\})"
     ),
@@ -88,9 +87,6 @@ PATTERNS = {
     ),
     "Discord Token": re.compile(
         r"(?:\b[a-zA-Z0-9_+\/-]{24,26}\.[a-zA-Z0-9_+\/-]{6}\.[a-zA-Z0-9_+\/-]{27,45}\b|\{DISCORD_(?:BOT_)?TOKEN\})"
-    ),
-    "DigitalOcean Token": re.compile(
-        r"dop_v1_(?:[a-fA-F0-9]{64}(?![a-fA-F0-9])|\{[a-zA-Z0-9_\-]+\})"
     ),
 }
 
@@ -215,7 +211,7 @@ for name, cp in PATTERNS.items():
         # It checks for either the bracketed placeholder b"{DISCORD_" or matches the dot-separated signature format using a fast bytes regex.
         pfxs_bytes = [b"{DISCORD_"]
         ci_regex_bytes = re.compile(b"\\.[a-zA-Z0-9_+\\/\\-]{6}\\.")
-        BYTES_PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
+        PIPELINE.append((name, cp, pfxs_bytes, True, ci_regex_bytes))
     elif name in PREFIX_MAPPING:
         pfxs, ci = PREFIX_MAPPING[name]
         pfxs_bytes = [pfx.encode("utf-8") for pfx in pfxs]
@@ -226,7 +222,7 @@ for name, cp in PATTERNS.items():
         else:
             PIPELINE.append((name, cp, pfxs_bytes, ci, None))
     else:
-        PIPELINE.append((name, cp, None, False, None, None))
+        PIPELINE.append((name, cp, None, False, None))
 
 # ⚡ Bolt: Global ignore lists for fast-path skipping of binary, lock, and huge files.
 # Checking filenames and extensions is done in pure Python string logic and completely
@@ -333,12 +329,12 @@ def scan_file(filepath, filename=None):
             filename = filename.rpartition(os.sep)[2]
         filename = filename or filepath
 
-    if filename in IGNORED_FILENAMES:
-        return found_issues
+        if filename in IGNORED_FILENAMES:
+            return found_issues
 
-    _, dot, ext = filename.rpartition(".")
-    if dot and ext.lower() in IGNORED_EXTENSIONS:
-        return found_issues
+        _, dot, ext = filename.rpartition(".")
+        if dot and ext.lower() in IGNORED_EXTENSIONS:
+            return found_issues
 
     try:
         # ⚡ Bolt: Read at most 5MB + 1 byte directly from the file to check file size and contents simultaneously.
@@ -372,18 +368,24 @@ def scan_file(filepath, filename=None):
                 active_patterns.append((name, cp))
                 continue
 
-            # Fast case-sensitive check using a simple loop on raw bytes
-            matched = False
-            for pfx in pfxs:
-                if pfx in raw_content:
-                    matched = True
-                    break
-            if matched:
-                active_patterns.append((name, cp))
-                continue
+            # Fast case-sensitive check using raw bytes check
+            # For patterns with exactly one candidate prefix, direct substring search bypasses python loop overhead
+            if len(pfxs_bytes) == 1:
+                if pfxs_bytes[0] in raw_content:
+                    active_patterns.append((name, cp))
+                    continue
+            else:
+                matched = False
+                for pfx in pfxs_bytes:
+                    if pfx in raw_content:
+                        matched = True
+                        break
+                if matched:
+                    active_patterns.append((name, cp))
+                    continue
 
             # Case-insensitive check using highly optimized pre-compiled bytes regex search (bypassing content decoding)
-            if ci and ci_regex.search(raw_content):
+            if ci and ci_regex_bytes and ci_regex_bytes.search(raw_content):
                 active_patterns.append((name, cp))
 
         if not active_patterns:
@@ -426,23 +428,6 @@ def scan_file(filepath, filename=None):
     except Exception as e:
         print(f"Error reading {filepath}: {e}")
     return found_issues
-
-
-def supports_color():
-    """
-    Returns True if the running terminal supports ANSI escape color codes,
-    incorporating standard checks for isatty, NO_COLOR, and TERM values.
-    """
-    if "NO_COLOR" in os.environ:
-        return False
-    # Check if stdout is a tty
-    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
-        return False
-    # Check for TERM variable
-    term = os.environ.get("TERM", "")
-    if term == "dumb":
-        return False
-    return True
 
 
 def main():

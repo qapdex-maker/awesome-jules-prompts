@@ -151,3 +151,10 @@ complex regex patterns.
 
 **Learning:** Standard traversals using `os.walk` and building/testing paths sequentially inside nested loops can introduce high performance overhead. We can bypass standard path construction, file opening, and function call overhead by pre-filtering traversed files inside `main()` using fast C-level string lookups on `filename` and dotless extensions directly. In addition, passing pre-computed `filename` to bypass path slicing inside `scan_file()`, storing `IGNORED_EXTENSIONS` without a leading dot to avoid redundant string concatenation/rebuilding, and using faster f-strings with explicit `os.sep` for path construction yields a massive overall test-suite runtime reduction (~45% speedup).
 **Action:** Pre-filter files directly during the `os.walk` traversal using fast dotless extension sets and pass pre-computed filenames to avoid redundant filesystem or string operations on ignored files.
+
+---
+
+## 2026-08-06 - Redundant Filename and Extension Checking Bypass
+
+**Learning:** In nested scanning routines where the calling iterator (e.g., `main()`) already performs fast-path filename and extension filters, executing those same checks inside the invoked handler (e.g., `scan_file()`) introduces redundant string partitions and dictionary-membership lookups on every single active file. Restricting these checks exclusively to individual-file invocations (where `filename` is omitted) completely eliminates this duplication on standard repository-wide scans.
+**Action:** Always wrap internal fast-path filter checks in conditional blocks to execute them only when the parent caller has not already performed equivalent filtering.
